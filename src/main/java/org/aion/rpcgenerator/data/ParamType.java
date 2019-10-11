@@ -1,23 +1,24 @@
 package org.aion.rpcgenerator.data;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
+import org.aion.rpcgenerator.Mappable;
 import org.aion.rpcgenerator.util.XMLUtils;
-import org.w3c.dom.Node;
+import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-public class ParamType extends Type{
+public class ParamType extends Type {
 
-    private final List<Field> fieldList = new ArrayList<>();
-    ParamType(Node node) {
-        super(node);
-        NodeList nodes = node.getChildNodes();
-        for (int i = 0; i < nodes.getLength(); i++) {
-            Node fieldNode = nodes.item(i);
+    private final List<Field> fieldList;
+
+    ParamType(Element element) {
+        super(element);
+        NodeList nodes = element.getChildNodes();
+        fieldList=new ArrayList<>();
+        for (Element fieldNode : XMLUtils.elements(nodes)) {
             if (fieldNode.getNodeName().equals("field")) {
                 fieldList.add(new Field(
                     Integer.parseInt(XMLUtils.valueFromAttribute(fieldNode, "index")),
@@ -27,6 +28,12 @@ public class ParamType extends Type{
                 ));
             }
         }
+    }
+
+    public ParamType(String name, List<String> comments,
+        List<Field> fieldList) {
+        super(name, comments);
+        this.fieldList = fieldList;
     }
 
     @Override
@@ -47,7 +54,7 @@ public class ParamType extends Type{
         return result;
     }
 
-    private static class Field {
+    public static class Field implements Mappable {
 
         private Integer index;
         private String fieldName;
@@ -55,14 +62,14 @@ public class ParamType extends Type{
         private String required;
         private Type type;
 
-        private Field(Integer index, String fieldName, String typeName, String required) {
+        public Field(Integer index, String fieldName, String typeName, String required) {
             this.index = index;
             this.fieldName = fieldName;
             this.typeName = typeName;
             this.required = required;
         }
 
-        Map<String, Object> toMap() {
+        public Map<String, Object> toMap() {
             return Map.ofEntries(
                 Map.entry("fieldName", fieldName),
                 Map.entry("type", type.toMap()),

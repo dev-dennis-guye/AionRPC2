@@ -1,11 +1,15 @@
 package org.aion.rpcgenerator.data;
 
-import org.w3c.dom.Node;
+import java.util.List;
+import org.w3c.dom.Element;
 
 public class PrimitiveType extends Type {
 
-    protected PrimitiveType(Node node) {
+    protected PrimitiveType(Element node) {
         super(node);
+    }
+    public PrimitiveType(String name, List<String> comments){
+        super(name, comments);
     }
 }
 

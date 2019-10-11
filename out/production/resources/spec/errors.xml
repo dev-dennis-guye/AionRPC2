@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<errors>
-    <error error_class="InvalidRequest" code="-32600" message="Invalid Request"/>
-    <error error_class="ParseError" code="-32700" message="Parse error"/>
-    <error error_class="MethodNotFound" code="-32601" message="Method not found"/>
-    <error error_class="InvalidParams" code="-32602" message="Invalid params"/>
-    <error error_class="InternalError" code="-32603" message="Internal error"/>
-</errors>

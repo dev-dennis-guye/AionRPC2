@@ -1,25 +1,30 @@
 package org.aion.rpcgenerator.data;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
+import org.aion.rpcgenerator.Mappable;
 import org.aion.rpcgenerator.util.XMLUtils;
-import org.w3c.dom.Node;
+import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 public class EnumType extends Type {
 
     private List<EnumValues> enumValues = new ArrayList<>();
 
-    EnumType(Node node) {
+    public EnumType(String name, List<String> comments,
+        List<EnumValues> enumValues) {
+        super(name, comments);
+        this.enumValues = enumValues;
+    }
+
+    EnumType(Element node) {
         super(node);
         NodeList nodeList = node.getChildNodes();
 
-        for (int i = 0; i < nodeList.getLength(); i++) {
-            Node childNode = nodeList.item(i);
+        for (Element childNode : XMLUtils.elements(nodeList)) {
             if (childNode.getNodeName().equals("value")) {
                 enumValues.add(new EnumValues(
                     XMLUtils.valueFromAttribute(childNode, "name"),
@@ -29,7 +34,8 @@ public class EnumType extends Type {
             }
         }
     }
-    public boolean setEnumTypes(List<Type> types){
+
+    public boolean setEnumTypes(List<Type> types) {
         boolean result = true;
         for (EnumValues enumValue :
             enumValues) {
@@ -47,7 +53,7 @@ public class EnumType extends Type {
         return superMap;
     }
 
-    private static class EnumValues {
+    public static class EnumValues implements Mappable {
 
         private final String name;
         private final String type;

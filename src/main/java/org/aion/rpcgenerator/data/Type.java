@@ -5,43 +5,39 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import org.aion.rpcgenerator.Mappable;
+import org.aion.rpcgenerator.util.SchemaUtils;
 import org.aion.rpcgenerator.util.XMLUtils;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
  * Defines the basic properties of all types
  */
-public abstract class Type {
+public abstract class Type implements Mappable {
 
     public final String name;
     private final List<String> comments;
 
-    Type(Node node) {
-        name = XMLUtils.valueFromAttribute(node, "name");
-        if (node.getChildNodes().getLength()!=0){
-            comments = new ArrayList<>();
-            NodeList nodeList= node.getChildNodes();
-            for (int i = 0; i < nodeList.getLength(); i++) {
-                Node childNode = nodeList.item(i);
-                if (childNode.getNodeName().equals("comment")){
-                    comments.add(childNode.getTextContent());
-                }
-            }
-        }
-        else {
-            comments = Collections.emptyList();
-        }
+    Type(String name, List<String> comments){
+        this.name = name;
+        this.comments = comments;
+    }
+
+    Type(Element element) {
+        name = XMLUtils.valueFromAttribute(element, "typeName");
+        comments= SchemaUtils.getComments(element.getChildNodes());
     }
 
     /**
-     *
      * @param node the xml node containing the information to build a TYPE
      * @return
      */
-    public static Type fromNode(Node node){
+    public static Type fromNode(Element node) {
         TypeName type = TypeName.fromNode(node);
-        switch (type){
+        switch (type) {
             case TYPE_PRIMITIVE:
                 return new PrimitiveType(node);
             case TYPE_CONSTRAINED:
@@ -53,7 +49,7 @@ public abstract class Type {
             case TYPE_PARAMS_WRAPPER:
                 return new ParamType(node);
             default:
-                return null;//realistically we will never get here.
+                throw new IllegalArgumentException();
         }
     }
 
@@ -64,6 +60,7 @@ public abstract class Type {
 
     /**
      * Converts the contents of this class into a mutable map
+     *
      * @return
      */
     protected Map<String, Object> toMutableMap() {

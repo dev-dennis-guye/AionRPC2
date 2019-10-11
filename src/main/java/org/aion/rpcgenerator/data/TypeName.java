@@ -2,7 +2,6 @@ package org.aion.rpcgenerator.data;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.NoSuchElementException;
 import org.w3c.dom.Node;
 
 enum TypeName {
@@ -24,7 +23,7 @@ enum TypeName {
                 return typeName;
             }
         }
-        throw new NoSuchElementException("Could not return an instance for node: " + node
+        throw new IllegalArgumentException("Could not return an instance for node: " + node
             .getNodeName());
     }
 }

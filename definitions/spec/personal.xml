@@ -16,7 +16,7 @@
             regex="^0x[0-9a-fA-F]+"/>
         <type-constrained baseType="data_hex_string" max="66" min="66" typeName="address"/>
         <type-enum typeName="version_string">
-            <value typeName="Version2" type="string" var="2.0"/>
+            <value name="Version2" type="string" var="2.0"/>
         </type-enum>
         <type-composite typeName="request">
             <comment>This is the standard request body for a JSON RPC Request</comment>
@@ -31,6 +31,11 @@
         </type-params-wrapper>
     </types>
     <methods>
-        <method name="personal_ecRecover" returnType="data_hex_string" param="ecRecoverParams"/>
+        <method name="personal_ecRecover" returnType="data_hex_string" param="ecRecoverParams">
+            <comment>Returns the key used to sign an input string.</comment>
+        </method>
     </methods>
+    <comments>
+        <comment>Allows you to interact with accounts on the aion network and provides a handful of crypto utilities</comment>
+    </comments>
 </personal>

@@ -14,5 +14,5 @@ repositories {
 dependencies {
     compile group: 'org.freemarker', name: 'freemarker', version: '2.3.14'
     compile group: 'info.picocli', name: 'picocli', version: '4.0.4'
-
+    testImplementation('org.junit.jupiter:junit-jupiter:5.5.2')
 }

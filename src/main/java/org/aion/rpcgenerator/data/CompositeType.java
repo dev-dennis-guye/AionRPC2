@@ -1,25 +1,25 @@
 package org.aion.rpcgenerator.data;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
+import org.aion.rpcgenerator.Mappable;
 import org.aion.rpcgenerator.util.XMLUtils;
-import org.w3c.dom.Node;
+import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 public class CompositeType extends Type {
 
-    private List<Field> fieldList = new ArrayList<>();
+    private List<Field> fieldList;
 
-    CompositeType(Node node) {
+    CompositeType(Element node) {
         super(node);
         NodeList nodes = node.getChildNodes();
 
-        for (int i = 0; i < nodes.getLength(); i++) {
-            Node fieldNode = nodes.item(i);
+        fieldList = new ArrayList<>();
+        for (Element fieldNode : XMLUtils.elements(nodes)) {
             if (fieldNode.getNodeName().equals("field")) {
                 fieldList.add(new Field(
                     XMLUtils.valueFromAttribute(fieldNode, "fieldName"),
@@ -28,6 +28,11 @@ public class CompositeType extends Type {
                 ));
             }
         }
+    }
+
+    CompositeType(String name, List<String> comments, List<Field> fields) {
+        super(name, comments);
+        fieldList = fields;
     }
 
     public boolean setFieldTypeDef(List<Type> types) {
@@ -47,20 +52,20 @@ public class CompositeType extends Type {
         return superMap;
     }
 
-    private static class Field {
+    public static class Field implements Mappable {
 
         private String fieldName;
         private String typeName;
         private String required;
         private Type type;
 
-        private Field(String fieldName, String typeName, String required) {
+        public Field(String fieldName, String typeName, String required) {
             this.fieldName = fieldName;
             this.typeName = typeName;
             this.required = required;
         }
 
-        Map<String, Object> toMap() {
+        public Map<String, Object> toMap() {
             return Map.ofEntries(
                 Map.entry("fieldName", fieldName),
                 Map.entry("type", type.toMap()),
@@ -68,7 +73,7 @@ public class CompositeType extends Type {
             );
         }
 
-        boolean setTypeDef(List<Type> types) {
+        public boolean setTypeDef(List<Type> types) {
             for (var _type : types) {
                 if (_type.name.equals(this.typeName)) {
                     this.type = _type;
