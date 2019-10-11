@@ -1,0 +1,18 @@
+plugins {
+    id 'java'
+}
+
+group 'org.aion.rpc'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.11
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile group: 'org.freemarker', name: 'freemarker', version: '2.3.14'
+    compile group: 'info.picocli', name: 'picocli', version: '4.0.4'
+
+}

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<personal>
+    <errors>
+        <error error_class="InvalidRequest"/>
+        <error error_class="ParseError"/>
+        <error error_class="MethodNotFound"/>
+        <error error_class="InvalidParams"/>
+        <error error_class="InternalError"/>
+    </errors>
+    <types>
+        <type-primitive name="string"/>
+        <type-primitive name="int"/>
+        <type-constrained baseType="string" max="infinity"
+            min="4" name="data_hex_string" regex="^0x([0-9a-fA-F][0-9a-fA-F])+"/>
+        <type-constrained baseType="string" max="infinity" min="3" name="hex_string"
+            regex="^0x[0-9a-fA-F]+"/>
+        <type-constrained baseType="data_hex_string" max="66" min="66" name="address"/>
+        <type-enum name="version_string">
+            <values>
+                <value name="Version2" type="string" var="2.0"/>
+            </values>
+        </type-enum>
+        <type-composite name="request">
+            <comment>This is the standard request body for a JSON RPC Request</comment>
+            <field fieldName="id" required="true" type="int"/>
+            <field fieldName="method" required="true" type="string"/>
+            <field fieldName="params" required="true" type="string"/>
+            <field fieldName="jsonRPC" required="false" type="version_string"/>
+        </type-composite>
+        <type-params-wrapper name="ecRecoverParams">
+            <field fieldName="dataThatWasSigned" required="true" index="0" type="string"/>
+            <field fieldName="signature" required="true" index="1" type="data_hex_string"/>
+        </type-params-wrapper>
+    </types>
+    <methods>
+        <method name="personal_ecRecover" return="data_hex_string" param="ecRecoverParams"/>
+    </methods>
+</personal>
