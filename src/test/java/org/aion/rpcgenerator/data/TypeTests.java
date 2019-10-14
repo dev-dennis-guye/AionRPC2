@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import javax.xml.parsers.ParserConfigurationException;
 import org.aion.rpcgenerator.data.EnumType.EnumValues;
-import org.aion.rpcgenerator.error.ErrorSchema;
 import org.aion.rpcgenerator.util.SchemaUtils;
 import org.aion.rpcgenerator.util.XMLUtils;
 import org.junit.jupiter.api.Test;
@@ -53,7 +52,7 @@ public class TypeTests {
             () -> XMLUtils.elements(root.getChildNodes()).stream().map(Type::fromNode)
                 .collect(Collectors.toUnmodifiableList()));
         //Initialize the nodes
-        SchemaUtils.initializeNodes(types);
+        SchemaUtils.initializeTypes(types);
         //Create well formed nodes
         PrimitiveType intType = new PrimitiveType("int", Collections.emptyList());
         PrimitiveType stringType = new PrimitiveType("string", Collections.emptyList());

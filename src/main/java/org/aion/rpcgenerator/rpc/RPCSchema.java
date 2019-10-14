@@ -23,9 +23,16 @@ public class RPCSchema implements Mappable {
     private List<Type> types = new ArrayList<>();
     private List<MethodSchema> methods = new ArrayList<>();
     private List<String> comments = new ArrayList<>();
-    public RPCSchema(Document rpcScheme, List<ErrorSchema> errorsSchemas) {
-        Element root = rpcScheme.getDocumentElement();
-        rpc = root.getNodeName();
+
+    /**
+     * Parse the xml document and create the schema for an rpc
+     *
+     * @param rpcSchema     the xml document
+     * @param errorsSchemas the list of expected errors
+     */
+    public RPCSchema(Document rpcSchema, List<ErrorSchema> errorsSchemas) {
+        Element root = rpcSchema.getDocumentElement();
+        rpc = XMLUtils.valueFromAttribute(root, "name");
         NodeList nodeList = root.getChildNodes();
         for (Element element: XMLUtils.elements(nodeList)) {
             SchemaDef def = SchemaDef.fromNode(element);
@@ -44,7 +51,7 @@ public class RPCSchema implements Mappable {
             }
         }
 
-        SchemaUtils.initializeNodes(types);
+        SchemaUtils.initializeTypes(types);
 
         for (MethodSchema methodSchema : methods) {
             methodSchema.setParamType(types);
@@ -57,9 +64,18 @@ public class RPCSchema implements Mappable {
             .map(element -> XMLUtils.valueFromAttribute(element, "error_class"))
             .collect(Collectors.toList());
 
-        return errorSchemas.stream()
+        List<ErrorSchema> result = errorSchemas.stream()
             .filter(e -> errorNames.contains(e.getErrorClass()))
             .collect(Collectors.toUnmodifiableList());
+        if (result.size() == errorNames.size()) {
+            return result;
+        } else {
+            throw new IllegalStateException(
+                "Failed to find the following error definitions " + errorSchemas.stream()
+                    .filter(e -> !errorNames.contains(e.getErrorClass()))
+                    .map(ErrorSchema::getErrorClass)
+                    .collect(Collectors.joining(",")));
+        }
     }
 
     private static List<Type> getTypes(NodeList nodeList) {
@@ -87,6 +103,14 @@ public class RPCSchema implements Mappable {
                 types.stream().map(Type::toMap).collect(Collectors.toUnmodifiableList())),
             Map.entry("comments", comments)
         );
+    }
+
+    /**
+     *
+     * @return the name of this rpc interface
+     */
+    public String getRpc() {
+        return rpc;
     }
 
     enum SchemaDef {

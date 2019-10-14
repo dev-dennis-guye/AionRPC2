@@ -1,4 +1,4 @@
-<#import "java_macros.ftl" as macros/>
+<#import "../rpc/java_macros.ftl" as macros/>
 package org.aion.api.server.rpc3;
 
 public class RPCExceptions{

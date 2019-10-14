@@ -1,6 +1,7 @@
 package org.aion.rpcgenerator.rpc;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
@@ -27,7 +28,7 @@ public class RPCSchemaTest {
     @Test
     void testMethodFromDoc() throws ParserConfigurationException, SAXException, IOException {
         String xml = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n"
-            + "<personal>\n"
+            + "<rpc name=\"personal\">\n"
             + "    <errors>\n"
             + "        <error error_class=\"InvalidRequest\"/>\n"
             + "        <error error_class=\"ParseError\"/>\n"
@@ -66,7 +67,7 @@ public class RPCSchemaTest {
             + "    <comments>\n"
             + "        <comment>Allows you to interact with accounts on the aion network and provides a handful of crypto utilities</comment>\n"
             + "    </comments>\n"
-            + "</personal>";
+            + "</rpc>";
         String xmlError = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n"
             + "<errors>\n"
             + "    <error error_class=\"InvalidRequest\" code=\"-32600\" message=\"Invalid Request\"/>\n"
@@ -114,6 +115,7 @@ public class RPCSchemaTest {
         methodSchema.setReturnType(List.of(hexType));
         methodSchema.setParamType(List.of(paramTypeEcRecover));
         ErrorSchema errorSchema = new ErrorSchema("InvalidRequest",-32600, "Invalid Request",Collections.emptyList());
+        assertEquals("personal",schema.toMap().get("rpc"));
 
 
         assertTrue(walkMapGraph(schema.toMap(), methodSchema.toMap()));

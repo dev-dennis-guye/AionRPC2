@@ -42,7 +42,7 @@ public class ParamType extends Type {
         List<Map<String, Object>> mapList = fieldList.stream()
             .map(Field::toMap)
             .collect(Collectors.toUnmodifiableList());
-        mutableMap.put("field", mapList);
+        mutableMap.put("fields", mapList);
         return mutableMap;
     }
 

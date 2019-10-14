@@ -16,21 +16,21 @@ public abstract class ${class_name}RPC{
         String interfaceName = request.method.split("_")[0];
         if(interfaceName.equals(${rpc})){
             <#list methods as method>
-                if(requestObject.method.contains("${method.typeName}")){
-                    ${macros.toJavaType(method.param.typeName)} params=${class_name}Codec
-                    .${macros.toJavaType(method.param.typeName)}.decode(request.params);
+                if(requestObject.method.contains("${method.name}")){
+                    ${macros.toJavaType(method.param.name)} params=${class_name}Codec
+                    .${macros.toJavaType(method.param.name)}.decode(request.params);
 
-                    ${macros.toJavaType(method.returnType.typeName)} result = ${method.typeName}(
-                        <#list method.param.fields as param>
-                            params.${param.fieldName}
-                            <#if param_has_next>
+                    ${macros.toJavaType(method.returnType.name)} result = ${method.name}(
+                        <#list method.param.fields as parameter>
+                            params.${parameter.fieldName}
+                            <#if parameter_has_next>
                                 ,
                             </#if>
                         </#list>
                     );
 
                     return ${class_name}Codec
-                            .${macros.toJavaType(method.returnType.typeName)}
+                            .${macros.toJavaType(method.returnType.name)}
                             .encode(result);
                 }
                 else
@@ -52,10 +52,10 @@ public abstract class ${class_name}RPC{
     }
 
     <#list methods as method>
-        protected abstract ${macros.toJavaType(method.returnType.typeName)} ${method.typeName}(
-            <#list method.param.fields as param>
-                ${param.typeName} ${macros.toJavaType(param.type.typeName}
-                <#if param_has_next>
+        protected abstract ${macros.toJavaType(method.returnType.name)} ${method.name}(
+            <#list method.param.fields as parameter>
+                ${macros.toJavaType(parameter.type.name)} ${parameter.fieldName}
+                <#if parameter_has_next>
                     ,
                 </#if>
             </#list>

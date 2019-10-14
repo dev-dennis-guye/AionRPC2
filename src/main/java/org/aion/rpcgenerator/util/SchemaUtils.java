@@ -23,7 +23,7 @@ public class SchemaUtils {
             .collect(Collectors.toUnmodifiableList());
     }
 
-    public static void initializeNodes(List<Type> types) {
+    public static void initializeTypes(List<Type> types) {
         for (Type type : types) {
             if (type instanceof CompositeType) {
                 ((CompositeType) type).setFieldTypeDef(types);

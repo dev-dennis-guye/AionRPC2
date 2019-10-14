@@ -1,18 +1,45 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+    dependencies {
+        classpath 'org.junit.platform:junit-platform-gradle-plugin:1.0.0'
+    }
+}
+
 plugins {
     id 'java'
+    id 'application'
+    id 'distribution'
+    id 'idea'
 }
 
 group 'org.aion.rpc'
 version '1.0-SNAPSHOT'
 
+mainClassName = 'org.aion.rpcgenerator.Cli'
+applicationName = 'generator'
 sourceCompatibility = 1.11
 
 repositories {
     mavenCentral()
 }
 
+jar {
+    manifest{
+        attributes 'Main-Class' : "aion.dashboard.AionMain"
+    }
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
 dependencies {
     compile group: 'org.freemarker', name: 'freemarker', version: '2.3.14'
     compile group: 'info.picocli', name: 'picocli', version: '4.0.4'
     testImplementation('org.junit.jupiter:junit-jupiter:5.5.2')
+    compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
+    compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.28'
+    testCompile 'com.google.truth:truth:0.42'
 }

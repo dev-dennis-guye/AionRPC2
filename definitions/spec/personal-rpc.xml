@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<personal>
+<rpc name="personal">
     <errors>
         <error error_class="InvalidRequest"/>
         <error error_class="ParseError"/>
@@ -38,4 +38,4 @@
     <comments>
         <comment>Allows you to interact with accounts on the aion network and provides a handful of crypto utilities</comment>
     </comments>
-</personal>
+</rpc>

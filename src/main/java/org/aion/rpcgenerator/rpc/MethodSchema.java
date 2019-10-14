@@ -29,8 +29,8 @@ public class MethodSchema implements Mappable {
     public MethodSchema(Element node) {
         this(
             XMLUtils.valueFromAttribute(node, "name"),
-            XMLUtils.valueFromAttribute(node, "returnType"),
             XMLUtils.valueFromAttribute(node, "param"),
+            XMLUtils.valueFromAttribute(node, "returnType"),
             SchemaUtils.getComments(node.getChildNodes())
             );
     }
