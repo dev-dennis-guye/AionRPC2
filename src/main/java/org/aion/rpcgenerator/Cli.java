@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javax.xml.parsers.ParserConfigurationException;
+import org.aion.rpcgenerator.data.Type;
 import org.aion.rpcgenerator.data.TypeSchema;
 import org.aion.rpcgenerator.error.ErrorSchema;
 import org.aion.rpcgenerator.rpc.RPCSchema;
@@ -79,6 +80,7 @@ public class Cli implements Runnable {
                     .fromDocument(XMLUtils.fromFile(errors));
                 File types = Paths.get(spec + "/types.xml").toFile();
                 TypeSchema typeSchema = new TypeSchema(XMLUtils.fromFile(types));
+                typeSchema.setErrors(errorSchemas);
                 logger.debug("Reading rpc template files.");
                 //noinspection ConstantConditions
                 List<File> rpcSpecFiles = Arrays.stream(specPath.toFile().listFiles())
@@ -88,6 +90,7 @@ public class Cli implements Runnable {
 
                 File errorsOutputFile = new File(Utils.appendToPath(output, "errors"));
                 File rpcOutputFile = new File(Utils.appendToPath(output, "rpc"));
+                File typesOutputFile = new File(Utils.appendToPath(output, "types"));
 
                 for (String template : templates) {
                     if (template.endsWith("errors")) {
@@ -99,7 +102,7 @@ public class Cli implements Runnable {
                                 configuration);
                         }
                     } else if (template.endsWith("types")) {
-                        processAllTypes();
+                        processAllTypes(typesOutputFile, typeSchema, template, configuration);
                     } else {
                         logger.warn("Encountered an unidentified template {}", template);
                     }
@@ -169,7 +172,7 @@ public class Cli implements Runnable {
             //noinspection ConstantConditions
             List<String> errorTemplates = Arrays
                 .stream(Paths.get(templatePath).toFile().listFiles()).filter(
-                    p -> p.toString().endsWith("exceptions.ftl") || p.toString()
+                    p -> p.getName().endsWith("exceptions.ftl") || p.getName()
                         .endsWith("errors.ftl"))
                 .map(File::getAbsolutePath).collect(Collectors.toUnmodifiableList());
             for (String templateFile : errorTemplates) {
@@ -196,8 +199,39 @@ public class Cli implements Runnable {
         }
     }
 
-    private void processAllTypes() {
-        logger.warn("Not supported");
+    private void processAllTypes(File outputFile, TypeSchema typeSchema, String templatePath, Configuration configuration) {
+        try{
+            List<String> typesTemplates = Arrays.stream(Paths.get(templatePath).toFile().listFiles())
+                .filter(file-> file.getName().endsWith("type_converter.ftl") || file.getName().endsWith("types.ftl"))
+                .map(File::getAbsolutePath).collect(Collectors.toUnmodifiableList());
+
+            for (String templateFile: typesTemplates){
+                String outputFileName;
+                if (templateFile.startsWith("java")){
+                    if (templateFile.endsWith("types.ftl")){
+                        outputFileName="RPCTypes.java";
+                    }else if (templateFile.endsWith("types_converter.ftl")){
+                        outputFileName="RPCTypesConverter.java";
+                    }
+                    else {
+                        outputFileName="";
+                    }
+                }
+                else {
+                    outputFileName="";
+                }
+                File temp = new File(
+                    Utils.appendToPath(outputFile.getAbsolutePath(), outputFileName));
+                if (createOutputFile(temp)) {
+                    try (PrintWriter printWriter = new PrintWriter(temp)) {
+                        process(configuration, templateFile, printWriter,
+                            typeSchema.toMap());
+                    }
+                }
+            }
+        }catch (Exception e){
+
+        }
     }
 
     void process(Configuration configuration, String ftlFile, Writer writer, Map map)
@@ -215,7 +249,7 @@ public class Cli implements Runnable {
     }
 
     private boolean createOutputFile(File rpcFile) throws IOException {
-        return rpcFile.exists() || ((rpcFile.exists() || rpcFile.getParentFile().mkdirs())
+        return rpcFile.exists() || ((rpcFile.getParentFile().exists() || rpcFile.getParentFile().mkdirs())
             && rpcFile.createNewFile());
     }
 

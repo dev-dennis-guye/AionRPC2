@@ -52,9 +52,6 @@ public class RPCSchema implements Mappable {
                     comments= SchemaUtils.getComments(element.getChildNodes());
             }
         }
-
-        SchemaUtils.initializeTypes(this.types);
-
         for (MethodSchema methodSchema : methods) {
             methodSchema.setParamType(this.types);
             methodSchema.setReturnType(this.types);

@@ -9,6 +9,7 @@
     </errors>
     <types>
         <type-primitive typeName="string"/>
+        <type-primitive typeName="long"/>
         <type-primitive typeName="int"/>
         <type-constrained typeName="data_hex_string"/>
         <type-constrained typeName="hex_string"/>
