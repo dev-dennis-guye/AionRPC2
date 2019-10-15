@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javax.xml.parsers.ParserConfigurationException;
+import org.aion.rpcgenerator.data.TypeSchema;
 import org.aion.rpcgenerator.error.ErrorSchema;
 import org.aion.rpcgenerator.rpc.RPCSchema;
 import org.aion.rpcgenerator.util.Utils;
@@ -41,7 +42,7 @@ public class Cli implements Runnable {
         "-o"}, defaultValue = "output", description = "The output output directory for the generated files.")
     private String output;// the output directory
 
-    Cli() {
+    private Cli() {
     }
 
     Cli(boolean verbose, String[] templates, String spec, String output) {
@@ -76,6 +77,8 @@ public class Cli implements Runnable {
                 logger.debug("Reading error template files.");
                 List<ErrorSchema> errorSchemas = ErrorSchema
                     .fromDocument(XMLUtils.fromFile(errors));
+                File types = Paths.get(spec + "/types.xml").toFile();
+                TypeSchema typeSchema = new TypeSchema(XMLUtils.fromFile(types));
                 logger.debug("Reading rpc template files.");
                 //noinspection ConstantConditions
                 List<File> rpcSpecFiles = Arrays.stream(specPath.toFile().listFiles())
@@ -92,7 +95,7 @@ public class Cli implements Runnable {
                     } else if (template.endsWith("rpc")) {
                         for (var rpcSpec : rpcSpecFiles) {
                             processAllTemplates(rpcOutputFile,
-                                new RPCSchema(XMLUtils.fromFile(rpcSpec), errorSchemas), template,
+                                new RPCSchema(XMLUtils.fromFile(rpcSpec), errorSchemas, typeSchema), template,
                                 configuration);
                         }
                     } else if (template.endsWith("types")) {

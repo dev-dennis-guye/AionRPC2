@@ -8,6 +8,7 @@ import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import org.aion.rpcgenerator.Mappable;
 import org.aion.rpcgenerator.data.Type;
+import org.aion.rpcgenerator.data.TypeSchema;
 import org.aion.rpcgenerator.error.ErrorSchema;
 import org.aion.rpcgenerator.util.SchemaUtils;
 import org.aion.rpcgenerator.util.XMLUtils;
@@ -26,11 +27,12 @@ public class RPCSchema implements Mappable {
 
     /**
      * Parse the xml document and create the schema for an rpc
-     *
-     * @param rpcSchema     the xml document
+     *  @param rpcSchema     the xml document
      * @param errorsSchemas the list of expected errors
+     * @param types
      */
-    public RPCSchema(Document rpcSchema, List<ErrorSchema> errorsSchemas) {
+    public RPCSchema(Document rpcSchema, List<ErrorSchema> errorsSchemas,
+        TypeSchema types) {
         Element root = rpcSchema.getDocumentElement();
         rpc = XMLUtils.valueFromAttribute(root, "name");
         NodeList nodeList = root.getChildNodes();
@@ -41,7 +43,7 @@ public class RPCSchema implements Mappable {
                     errors = getErrors(element.getChildNodes(), errorsSchemas);
                     break;
                 case TYPES:
-                    types = getTypes(element.getChildNodes());
+                    this.types = getTypes(element.getChildNodes(), types);
                     break;
                 case METHOD:
                     methods = getMethodSchemas(element.getChildNodes());
@@ -51,11 +53,11 @@ public class RPCSchema implements Mappable {
             }
         }
 
-        SchemaUtils.initializeTypes(types);
+        SchemaUtils.initializeTypes(this.types);
 
         for (MethodSchema methodSchema : methods) {
-            methodSchema.setParamType(types);
-            methodSchema.setReturnType(types);
+            methodSchema.setParamType(this.types);
+            methodSchema.setReturnType(this.types);
         }
     }
 
@@ -78,11 +80,23 @@ public class RPCSchema implements Mappable {
         }
     }
 
-    private static List<Type> getTypes(NodeList nodeList) {
-        return XMLUtils.elements(nodeList)
-            .stream()
-            .map(Type::fromNode)
+    private static List<Type> getTypes(NodeList nodeList, TypeSchema typeSchema) {
+        List<String> typeNames = XMLUtils.elements(nodeList).stream()
+            .map(element -> XMLUtils.valueFromAttribute(element, "typeName"))
             .collect(Collectors.toUnmodifiableList());
+
+        List<Type> result = typeSchema.toList().stream()
+            .filter(t-> typeNames.contains(t.name))
+            .collect(Collectors.toUnmodifiableList());
+        if (result.size() == typeNames.size()) {
+            return result;
+        } else {
+            throw new IllegalStateException(
+                "Failed to find the following error definitions " + typeSchema.toList().stream()
+                    .filter(e -> !typeNames.contains(e.name))
+                    .map(e->e.name)
+                    .collect(Collectors.joining(",")));
+        }
     }
 
     private static List<MethodSchema> getMethodSchemas(NodeList nodeList) {

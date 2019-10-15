@@ -15,8 +15,8 @@ import org.aion.rpcgenerator.data.ConstrainedType;
 import org.aion.rpcgenerator.data.EnumType;
 import org.aion.rpcgenerator.data.EnumType.EnumValues;
 import org.aion.rpcgenerator.data.ParamType;
-import org.aion.rpcgenerator.data.ParamType.Field;
 import org.aion.rpcgenerator.data.PrimitiveType;
+import org.aion.rpcgenerator.data.TypeSchema;
 import org.aion.rpcgenerator.error.ErrorSchema;
 import org.aion.rpcgenerator.util.XMLUtils;
 import org.junit.jupiter.api.Test;
@@ -83,9 +83,47 @@ public class RPCSchemaTest {
             + "    </error>\n"
             + "</errors>";
 
+        String typeXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n"
+            + "<types>\n"
+            + "    <composite>\n"
+            + "        <type-composite typeName=\"request\">\n"
+            + "            <comment>This is the standard request body for a JSON RPC Request</comment>\n"
+            + "            <field fieldName=\"id\" required=\"true\" type=\"int\"/>\n"
+            + "            <field fieldName=\"method\" required=\"true\" type=\"string\"/>\n"
+            + "            <field fieldName=\"params\" required=\"true\" type=\"string\"/>\n"
+            + "            <field fieldName=\"jsonRPC\" required=\"false\" type=\"version_string\"/>\n"
+            + "        </type-composite>\n"
+            + "    </composite>\n"
+            + "    <constrained>\n"
+            + "        <type-constrained baseType=\"string\" max=\"infinity\"\n"
+            + "            min=\"4\" regex=\"^0x([0-9a-fA-F][0-9a-fA-F])+\" typeName=\"data_hex_string\"/>\n"
+            + "        <type-constrained baseType=\"string\" max=\"infinity\" min=\"3\" regex=\"^0x[0-9a-fA-F]+\"\n"
+            + "            typeName=\"hex_string\"/>\n"
+            + "        <type-constrained baseType=\"data_hex_string\" max=\"66\" min=\"66\" typeName=\"address\"/>\n"
+            + "    </constrained>\n"
+            + "    <enum>\n"
+            + "        <type-enum typeName=\"version_string\">\n"
+            + "            <value name=\"Version2\" type=\"string\" var=\"2.0\"/>\n"
+            + "        </type-enum>\n"
+            + "    </enum>\n"
+            + "    <param>\n"
+            + "        <!-- param types specific to each method-->\n"
+            + "        <type-params-wrapper typeName=\"ecRecoverParams\">\n"
+            + "            <field fieldName=\"dataThatWasSigned\" index=\"0\" required=\"true\" type=\"string\"/>\n"
+            + "            <field fieldName=\"signature\" index=\"1\" required=\"true\" type=\"data_hex_string\"/>\n"
+            + "        </type-params-wrapper>\n"
+            + "        <!-- return type specific to each method-->\n"
+            + "    </param>\n"
+            + "    <primitives>\n"
+            + "        <type-primitive typeName=\"string\"/>\n"
+            + "        <type-primitive typeName=\"int\"/>\n"
+            + "    </primitives>\n"
+            + "</types>";
+
         Document doc = XMLUtils.fromString(xmlError);
         List<ErrorSchema> errors = assertDoesNotThrow(() -> ErrorSchema.fromDocument(doc));
-        RPCSchema schema = new RPCSchema(XMLUtils.fromString(xml), errors);
+        TypeSchema typeSchema = new TypeSchema(XMLUtils.fromString(typeXml));
+        RPCSchema schema = new RPCSchema(XMLUtils.fromString(xml), errors, typeSchema);
 
         PrimitiveType intType = new PrimitiveType("int", Collections.emptyList());
         PrimitiveType stringType = new PrimitiveType("string", Collections.emptyList());
@@ -93,16 +131,17 @@ public class RPCSchemaTest {
         enumValue.setTypeDef(Collections.singletonList(stringType));
         CompositeType.Field compositeField = new CompositeType.Field("id", "int", "true");
         compositeField.setTypeDef(Collections.singletonList(intType));
-        ConstrainedType hexType = new ConstrainedType("data_hex_string", Collections.emptyList(), "^0x([0-9a-fA-F][0-9a-fA-F])+",4, Integer.MAX_VALUE, "string");
+        ConstrainedType hexType = new ConstrainedType("data_hex_string", Collections.emptyList(),
+            "^0x([0-9a-fA-F][0-9a-fA-F])+", 4, Integer.MAX_VALUE, "string");
 
         hexType.setBaseTypeDef(List.of(stringType));
 
-        ParamType paramTypeEcRecover = new ParamType("ecRecoverParams", Collections.emptyList(), List.of(
-            new ParamType.Field(0,"dataThatWasSigned","string", "true" ),
-            new ParamType.Field(1,"signature","data_hex_string", "true" )
-        ));
-        paramTypeEcRecover.setFieldTypeDef(List.of(hexType,stringType));
-
+        ParamType paramTypeEcRecover = new ParamType("ecRecoverParams", Collections.emptyList(),
+            List.of(
+                new ParamType.Field(0, "dataThatWasSigned", "string", "true"),
+                new ParamType.Field(1, "signature", "data_hex_string", "true")
+            ));
+        paramTypeEcRecover.setFieldTypeDef(List.of(hexType, stringType));
 
         assertTrue(walkMapGraph(schema.toMap(), stringType.toMap()));
         assertTrue(walkMapGraph(schema.toMap(), intType.toMap()));
@@ -114,9 +153,9 @@ public class RPCSchemaTest {
             "Allows you to interact with accounts on the aion network and provides a handful of crypto utilities"));
         methodSchema.setReturnType(List.of(hexType));
         methodSchema.setParamType(List.of(paramTypeEcRecover));
-        ErrorSchema errorSchema = new ErrorSchema("InvalidRequest",-32600, "Invalid Request",Collections.emptyList());
-        assertEquals("personal",schema.toMap().get("rpc"));
-
+        ErrorSchema errorSchema = new ErrorSchema("InvalidRequest", -32600, "Invalid Request",
+            Collections.emptyList());
+        assertEquals("personal", schema.toMap().get("rpc"));
 
         assertTrue(walkMapGraph(schema.toMap(), methodSchema.toMap()));
         assertTrue(walkMapGraph(schema.toMap(), errorSchema.toMap()));
@@ -179,15 +218,17 @@ public class RPCSchemaTest {
 
         for (Map.Entry entry : map1.entrySet()) {
             for (Map.Entry entry1 : map2.entrySet()) {
-                if(entry1.getValue().equals(entry.getValue()) &&
+                if (entry1.getValue().equals(entry.getValue()) &&
                     entry1.getKey().equals(entry.getKey())) {
                     return true;
-                }
-                else {
-                    if (entry.getValue() instanceof List && entry1.getValue() instanceof List){
+                } else {
+                    if (entry.getValue() instanceof List && entry1.getValue() instanceof List) {
                         boolean res = ((List) entry.getValue()).containsAll(
-                            (Collection<?>) entry1.getValue()) && entry1.getValue().equals(entry.getValue());
-                        if (res) return true;
+                            (Collection<?>) entry1.getValue()) && entry1.getValue()
+                            .equals(entry.getValue());
+                        if (res) {
+                            return true;
+                        }
                     }
                 }
             }

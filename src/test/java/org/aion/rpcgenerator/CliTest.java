@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javax.xml.parsers.ParserConfigurationException;
+import org.aion.rpcgenerator.data.TypeSchema;
 import org.aion.rpcgenerator.error.ErrorSchema;
 import org.aion.rpcgenerator.rpc.RPCSchema;
 import org.aion.rpcgenerator.util.XMLUtils;
@@ -28,7 +29,7 @@ public class CliTest {
 
     @BeforeAll
     static void beforeAll(){
-        afterAll();//run this in case the test did not finish correctly last time
+        new File(badDirectoryLocation).delete();
         assertTrue(new File(badDirectoryLocation).mkdirs());
     }
 
@@ -64,14 +65,18 @@ public class CliTest {
     @Test
     void testProcess()
         throws ParserConfigurationException, SAXException, IOException, TemplateException {
-        Cli cli = new Cli(false, new String[]{"definitions/templates/rpc","definitions/templates/errors"}, "definitions/spec", "out");
+        Cli cli = new Cli(false,
+            new String[]{"definitions/templates/rpc", "definitions/templates/errors"},
+            "definitions/spec", "out");
 
         Configuration configuration = new Configuration();
         String errorsXML = "definitions/spec/errors.xml";
         String rpcXML = "definitions/spec/personal-rpc.xml";
+        String typeXML = "definitions/spec/types.xml";
 
         List<ErrorSchema> errors = ErrorSchema.fromDocument(XMLUtils.fromFile(errorsXML));
-        RPCSchema rpcSchema = new RPCSchema(XMLUtils.fromFile(rpcXML),errors);
+        TypeSchema typeSchema = new TypeSchema(XMLUtils.fromFile(typeXML));
+        RPCSchema rpcSchema = new RPCSchema(XMLUtils.fromFile(rpcXML), errors, typeSchema);
         PrintWriter printWriter = new PrintWriter(System.out);
 
         assertDoesNotThrow( () ->cli.process(configuration, "definitions/templates/errors/java_exceptions.ftl", printWriter , Map.ofEntries(Map.entry("errors",

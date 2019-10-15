@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<types>
+    <composite>
+        <type-composite typeName="request">
+            <comment>This is the standard request body for a JSON RPC Request</comment>
+            <field fieldName="id" required="true" type="int"/>
+            <field fieldName="method" required="true" type="string"/>
+            <field fieldName="params" required="true" type="string"/>
+            <field fieldName="jsonRPC" required="false" type="version_string"/>
+        </type-composite>
+    </composite>
+    <constrained>
+        <type-constrained baseType="string" max="infinity"
+            min="4" regex="^0x([0-9a-fA-F][0-9a-fA-F])+" typeName="data_hex_string"/>
+        <type-constrained baseType="string" max="infinity" min="3" regex="^0x[0-9a-fA-F]+"
+            typeName="hex_string"/>
+        <type-constrained baseType="data_hex_string" max="66" min="66" typeName="address"/>
+    </constrained>
+    <enum>
+        <type-enum typeName="version_string">
+            <value name="Version2" type="string" var="2.0"/>
+        </type-enum>
+    </enum>
+    <param>
+        <!-- param types specific to each method-->
+        <type-params-wrapper typeName="ecRecoverParams">
+            <field fieldName="dataThatWasSigned" index="0" required="true" type="string"/>
+            <field fieldName="signature" index="1" required="true" type="data_hex_string"/>
+        </type-params-wrapper>
+        <!-- return type specific to each method-->
+    </param>
+    <primitives>
+        <type-primitive typeName="string"/>
+        <type-primitive typeName="int"/>
+    </primitives>
+</types>
