@@ -22,16 +22,6 @@ public class TypeTests {
     @Test
     public void typesFromNodeList() throws ParserConfigurationException, SAXException, IOException {
         String xml = "<types>"
-            + "<type-primitive typeName=\"string\"/>\n"
-            + "        <type-primitive typeName=\"int\"/>\n"
-            + "        <type-constrained baseType=\"string\" max=\"infinity\"\n"
-            + "            min=\"4\" typeName=\"data_hex_string\" regex=\"^0x([0-9a-fA-F][0-9a-fA-F])+\"/>\n"
-            + "        <type-constrained baseType=\"string\" max=\"infinity\" min=\"3\" typeName=\"hex_string\"\n"
-            + "            regex=\"^0x[0-9a-fA-F]+\"/>\n"
-            + "        <type-constrained baseType=\"data_hex_string\" max=\"66\" min=\"66\" typeName=\"address\"/>\n"
-            + "        <type-enum typeName=\"version_string\">\n"
-            + "            <value name=\"Version2\" type=\"string\" var=\"2.0\"/>\n"
-            + "        </type-enum>\n"
             + "        <type-composite typeName=\"request\">\n"
             + "            <comment>This is the standard request body for a JSON RPC Request</comment>\n"
             + "            <field fieldName=\"id\" required=\"true\" type=\"int\"/>\n"
@@ -39,10 +29,22 @@ public class TypeTests {
             + "            <field fieldName=\"params\" required=\"true\" type=\"string\"/>\n"
             + "            <field fieldName=\"jsonRPC\" required=\"false\" type=\"version_string\"/>\n"
             + "        </type-composite>\n"
+            + "        <type-constrained baseType=\"string\" max=\"infinity\"\n"
+            + "            min=\"4\" regex=\"^0x([0-9a-fA-F][0-9a-fA-F])+\" typeName=\"data_hex_string\"/>\n"
+            + "        <type-constrained baseType=\"string\" max=\"infinity\" min=\"3\" regex=\"^0x[0-9a-fA-F]+\"\n"
+            + "            typeName=\"hex_string\"/>\n"
+            + "        <type-constrained baseType=\"data_hex_string\" max=\"66\" min=\"66\" typeName=\"address\"/>\n"
+            + "        <type-enum typeName=\"version_string\" internalType = \"string\">\n"
+            + "            <value name=\"Version2\" var=\"2.0\"/>\n"
+            + "        </type-enum>\n"
+            + "        <!-- param types specific to each method-->\n"
             + "        <type-params-wrapper typeName=\"ecRecoverParams\">\n"
-            + "            <field fieldName=\"dataThatWasSigned\" required=\"true\" index=\"0\" type=\"string\"/>\n"
-            + "            <field fieldName=\"signature\" required=\"true\" index=\"1\" type=\"data_hex_string\"/>\n"
-            + "        </type-params-wrapper>"
+            + "            <field fieldName=\"dataThatWasSigned\" index=\"0\" required=\"true\" type=\"string\"/>\n"
+            + "            <field fieldName=\"signature\" index=\"1\" required=\"true\" type=\"data_hex_string\"/>\n"
+            + "        </type-params-wrapper>\n"
+            + "        <!-- return type specific to each method-->\n"
+            + "        <type-primitive typeName=\"string\"/>\n"
+            + "        <type-primitive typeName=\"int\"/>\n"
             + "</types>";
 
         //Create the type definitions
@@ -56,8 +58,7 @@ public class TypeTests {
         //Create well formed nodes
         PrimitiveType intType = new PrimitiveType("int", Collections.emptyList());
         PrimitiveType stringType = new PrimitiveType("string", Collections.emptyList());
-        EnumType.EnumValues enumValue = new EnumValues("Version2", "string", "2.0");
-        enumValue.setTypeDef(Collections.singletonList(stringType));
+        EnumType.EnumValues enumValue = new EnumValues("Version2", "2.0");
         CompositeType.Field compositeField = new CompositeType.Field("id", "int", "true");
         compositeField.setTypeDef(Collections.singletonList(intType));
 

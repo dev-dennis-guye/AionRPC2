@@ -38,26 +38,13 @@ public class RPCSchemaTest {
             + "    </errors>\n"
             + "    <types>\n"
             + "        <type-primitive typeName=\"string\"/>\n"
-            + "        <type-primitive typeName=\"int\"/>\n"
-            + "        <type-constrained baseType=\"string\" max=\"infinity\"\n"
-            + "            min=\"4\" typeName=\"data_hex_string\" regex=\"^0x([0-9a-fA-F][0-9a-fA-F])+\"/>\n"
-            + "        <type-constrained baseType=\"string\" max=\"infinity\" min=\"3\" typeName=\"hex_string\"\n"
-            + "            regex=\"^0x[0-9a-fA-F]+\"/>\n"
-            + "        <type-constrained baseType=\"data_hex_string\" max=\"66\" min=\"66\" typeName=\"address\"/>\n"
-            + "        <type-enum typeName=\"version_string\">\n"
-            + "            <value name=\"Version2\" type=\"string\" var=\"2.0\"/>\n"
-            + "        </type-enum>\n"
-            + "        <type-composite typeName=\"request\">\n"
-            + "            <comment>This is the standard request body for a JSON RPC Request</comment>\n"
-            + "            <field fieldName=\"id\" required=\"true\" type=\"int\"/>\n"
-            + "            <field fieldName=\"method\" required=\"true\" type=\"string\"/>\n"
-            + "            <field fieldName=\"params\" required=\"true\" type=\"string\"/>\n"
-            + "            <field fieldName=\"jsonRPC\" required=\"false\" type=\"version_string\"/>\n"
-            + "        </type-composite>\n"
-            + "        <type-params-wrapper typeName=\"ecRecoverParams\">\n"
-            + "            <field fieldName=\"dataThatWasSigned\" required=\"true\" index=\"0\" type=\"string\"/>\n"
-            + "            <field fieldName=\"signature\" required=\"true\" index=\"1\" type=\"data_hex_string\"/>\n"
-            + "        </type-params-wrapper>\n"
+            + "        <type-primitive typeName=\"long\"/>\n"
+            + "        <type-constrained typeName=\"data_hex_string\"/>\n"
+            + "        <type-constrained typeName=\"hex_string\"/>\n"
+            + "        <type-constrained typeName=\"address\"/>\n"
+            + "        <type-enum typeName=\"version_string\"/>\n"
+            + "        <type-composite typeName=\"request\"/>\n"
+            + "        <type-params-wrapper typeName=\"ecRecoverParams\"/>\n"
             + "    </types>\n"
             + "    <methods>\n"
             + "        <method name=\"personal_ecRecover\" returnType=\"data_hex_string\" param=\"ecRecoverParams\">\n"
@@ -85,10 +72,12 @@ public class RPCSchemaTest {
 
         String typeXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n"
             + "<types>\n"
+            + "    <encode-error error_class=\"ParseError\"/>\n"
+            + "    <decode-error error_class=\"ParseError\"/>\n"
             + "    <composite>\n"
             + "        <type-composite typeName=\"request\">\n"
             + "            <comment>This is the standard request body for a JSON RPC Request</comment>\n"
-            + "            <field fieldName=\"id\" required=\"true\" type=\"int\"/>\n"
+            + "            <field fieldName=\"id\" required=\"true\" type=\"long\"/>\n"
             + "            <field fieldName=\"method\" required=\"true\" type=\"string\"/>\n"
             + "            <field fieldName=\"params\" required=\"true\" type=\"string\"/>\n"
             + "            <field fieldName=\"jsonRPC\" required=\"false\" type=\"version_string\"/>\n"
@@ -97,13 +86,13 @@ public class RPCSchemaTest {
             + "    <constrained>\n"
             + "        <type-constrained baseType=\"string\" max=\"infinity\"\n"
             + "            min=\"4\" regex=\"^0x([0-9a-fA-F][0-9a-fA-F])+\" typeName=\"data_hex_string\"/>\n"
-            + "        <type-constrained baseType=\"string\" max=\"infinity\" min=\"3\" regex=\"^0x[0-9a-fA-F]+\"\n"
+            + "        <type-constrained baseType=\"long\" max=\"infinity\" min=\"3\" regex=\"^0x[0-9a-fA-F]+\"\n"
             + "            typeName=\"hex_string\"/>\n"
             + "        <type-constrained baseType=\"data_hex_string\" max=\"66\" min=\"66\" typeName=\"address\"/>\n"
             + "    </constrained>\n"
             + "    <enum>\n"
-            + "        <type-enum typeName=\"version_string\">\n"
-            + "            <value name=\"Version2\" type=\"string\" var=\"2.0\"/>\n"
+            + "        <type-enum typeName=\"version_string\" internalType = \"string\">\n"
+            + "            <value name=\"Version2\" var=\"2.0\"/>\n"
             + "        </type-enum>\n"
             + "    </enum>\n"
             + "    <param>\n"
@@ -116,19 +105,19 @@ public class RPCSchemaTest {
             + "    </param>\n"
             + "    <primitives>\n"
             + "        <type-primitive typeName=\"string\"/>\n"
-            + "        <type-primitive typeName=\"int\"/>\n"
+            + "        <type-primitive typeName=\"long\"/>\n"
             + "    </primitives>\n"
             + "</types>";
 
         Document doc = XMLUtils.fromString(xmlError);
         List<ErrorSchema> errors = assertDoesNotThrow(() -> ErrorSchema.fromDocument(doc));
         TypeSchema typeSchema = new TypeSchema(XMLUtils.fromString(typeXml));
+        typeSchema.setErrors(errors);
         RPCSchema schema = new RPCSchema(XMLUtils.fromString(xml), errors, typeSchema);
 
         PrimitiveType intType = new PrimitiveType("int", Collections.emptyList());
         PrimitiveType stringType = new PrimitiveType("string", Collections.emptyList());
-        EnumType.EnumValues enumValue = new EnumValues("Version2", "string", "2.0");
-        enumValue.setTypeDef(Collections.singletonList(stringType));
+        EnumType.EnumValues enumValue = new EnumValues("Version2",  "2.0");
         CompositeType.Field compositeField = new CompositeType.Field("id", "int", "true");
         compositeField.setTypeDef(Collections.singletonList(intType));
         ConstrainedType hexType = new ConstrainedType("data_hex_string", Collections.emptyList(),
