@@ -74,15 +74,15 @@ public class TypeSchema implements Mappable {
     @Override
     public Map<String, Object> toMap() {
         return Map.ofEntries(
-            Map.entry("composite",
+            Map.entry("compositeTypes",
                 compositeTypes.stream().map(Type::toMap).collect(Collectors.toUnmodifiableList())),
-            Map.entry("constrained", constrainedTypes.stream().map(Type::toMap)
+            Map.entry("constrainedTypes", constrainedTypes.stream().map(Type::toMap)
                 .collect(Collectors.toUnmodifiableList())),
             Map.entry("enumTypes",
                 enumTypes.stream().map(Type::toMap).collect(Collectors.toUnmodifiableList())),
             Map.entry("paramTypes",
                 paramTypes.stream().map(Type::toMap).collect(Collectors.toUnmodifiableList())),
-            Map.entry("primitives",
+            Map.entry("primitivesTypes",
                 primitiveTypes.stream().map(Type::toMap).collect(Collectors.toUnmodifiableList())),
             Map.entry("encodeError", encodeError.toMap()),
             Map.entry("decodeError", decodeError.toMap())

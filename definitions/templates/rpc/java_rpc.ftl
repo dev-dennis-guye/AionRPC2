@@ -1,8 +1,10 @@
-<#import "java_macros.ftl" as macros/>
+<#import "../java_macros.ftl" as macros/>
 <#global class_name = macros.toJavaClassName(rpc)/>
 package org.aion.api.server.rpc3;
 
 import static org.aion.api.server.rpc3.RPCExceptions.*;
+package org.aion.api.server.rpc3.types.RPCTypes.*;
+package org.aion.api.server.rpc3.types.RPCTypeConverter.*;
 
 public abstract class ${class_name}RPC{
 
@@ -17,24 +19,13 @@ public abstract class ${class_name}RPC{
         if(interfaceName.equals(${rpc})){
             <#list methods as method>
                 if(requestObject.method.contains("${method.name}")){
-                    ${macros.toJavaType(method.param.name)} params=${class_name}Codec
-                    .${macros.toJavaType(method.param.name)}.decode(request.params);
+                    ${macros.toJavaType(method.param.name)} params=${macros.toJavaConverter(method.returnType.name)}.decode(request.params);
 
-                    ${macros.toJavaType(method.returnType.name)} result = ${method.name}(
-                        <#list method.param.fields as parameter>
-                            params.${parameter.fieldName}
-                            <#if parameter_has_next>
-                                ,
-                            </#if>
-                        </#list>
-                    );
-
-                    return ${class_name}Codec
-                            .${macros.toJavaType(method.returnType.name)}
+                    ${macros.toJavaType(method.returnType.name)} result = ${method.name}(<#list method.param.fields as parameter>params.${parameter.fieldName}<#if parameter_has_next>,</#if></#list>);
+                    return ${macros.toJavaConverter(method.returnType.name)}
                             .encode(result);
                 }
                 else
-
             </#list>
                     throw new ${macros.toJavaException("MethodNotFound")}();
         }
@@ -52,13 +43,6 @@ public abstract class ${class_name}RPC{
     }
 
     <#list methods as method>
-        protected abstract ${macros.toJavaType(method.returnType.name)} ${method.name}(
-            <#list method.param.fields as parameter>
-                ${macros.toJavaType(parameter.type.name)} ${parameter.fieldName}
-                <#if parameter_has_next>
-                    ,
-                </#if>
-            </#list>
-        );
+    protected abstract ${macros.toJavaType(method.returnType.name)} ${method.name}(<#list method.param.fields as parameter>${macros.toJavaType(parameter.type.name)} ${parameter.fieldName}<#if parameter_has_next>,</#if></#list>);
     </#list>
 }

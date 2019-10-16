@@ -19,23 +19,49 @@ import org.aion.rpcgenerator.util.XMLUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
 
 public class CliTest {
 
     private static String badDirectoryLocation = "defitions/badlocation";
-    private static String nonExistentDirectory ="definitons/doesNotExist";
+    private static String nonExistentDirectory = "definitons/doesNotExist";
+    private Cli cli;
+    private Configuration configuration;
+    private String errorsXML;
+    private String rpcXML;
+    private String typeXML;
+    private List<ErrorSchema> errors;
+    private TypeSchema typeSchema;
+    private RPCSchema rpcSchema;
+    private PrintWriter printWriter;
 
     @BeforeAll
-    static void beforeAll(){
+    static void beforeAll() {
         new File(badDirectoryLocation).delete();
         assertTrue(new File(badDirectoryLocation).mkdirs());
     }
 
     @AfterAll
-    static void afterAll(){
+    static void afterAll() {
         assertTrue(new File(badDirectoryLocation).delete());
+    }
+
+    @BeforeEach
+    void setup() throws ParserConfigurationException, SAXException, IOException {
+        cli = new Cli(false,
+            new String[]{"definitions/templates/rpc", "definitions/templates/errors"},
+            "definitions/spec", "out");
+        configuration = new Configuration();
+        errorsXML = "definitions/spec/errors.xml";
+        rpcXML = "definitions/spec/personal-rpc.xml";
+        typeXML = "definitions/spec/types.xml";
+        errors = ErrorSchema.fromDocument(XMLUtils.fromFile(errorsXML));
+        typeSchema = new TypeSchema(XMLUtils.fromFile(typeXML));
+        typeSchema.setErrors(errors);
+        rpcSchema = new RPCSchema(XMLUtils.fromFile(rpcXML), errors, typeSchema);
+        printWriter = new PrintWriter(System.out);
     }
 
     @Test
@@ -63,30 +89,35 @@ public class CliTest {
     }
 
     @Test
-    void testProcess()
-        throws ParserConfigurationException, SAXException, IOException, TemplateException {
-        Cli cli = new Cli(false,
-            new String[]{"definitions/templates/rpc", "definitions/templates/errors"},
-            "definitions/spec", "out");
+    void testProcessExceptions() {
 
-        Configuration configuration = new Configuration();
-        String errorsXML = "definitions/spec/errors.xml";
-        String rpcXML = "definitions/spec/personal-rpc.xml";
-        String typeXML = "definitions/spec/types.xml";
-
-        List<ErrorSchema> errors = ErrorSchema.fromDocument(XMLUtils.fromFile(errorsXML));
-        TypeSchema typeSchema = new TypeSchema(XMLUtils.fromFile(typeXML));
-        typeSchema.setErrors(errors);
-        RPCSchema rpcSchema = new RPCSchema(XMLUtils.fromFile(rpcXML), errors, typeSchema);
-        PrintWriter printWriter = new PrintWriter(System.out);
-
-        assertDoesNotThrow( () ->cli.process(configuration, "definitions/templates/errors/java_exceptions.ftl", printWriter , Map.ofEntries(Map.entry("errors",
-            errors.stream().map(ErrorSchema::toMap)
-                .collect(Collectors.toUnmodifiableList()))))
+        assertDoesNotThrow(() -> cli
+            .process(configuration, "definitions/templates/errors/java_exceptions.ftl", printWriter,
+                Map.ofEntries(Map.entry("errors",
+                    errors.stream().map(ErrorSchema::toMap)
+                        .collect(Collectors.toUnmodifiableList()))))
         );
+    }
 
-        assertDoesNotThrow( () ->cli.process(configuration, "definitions/templates/rpc/java_rpc.ftl", printWriter , rpcSchema.toMap())
+    @Test
+    void testProcessRPCSchema(){
+        assertDoesNotThrow(() -> cli
+            .process(configuration, "definitions/templates/rpc/java_rpc.ftl", printWriter,
+                rpcSchema.toMap())
         );
+    }
 
+    @Test
+    void testProcessTypesTemplate(){
+        assertDoesNotThrow(() -> cli
+            .process(configuration, "definitions/templates/types/java_types.ftl", printWriter,
+                typeSchema.toMap()));
+    }
+
+    @Test
+    void testProcessTypesConverterTemplate(){
+        assertDoesNotThrow(() -> cli
+            .process(configuration, "definitions/templates/types/java_type_converter.ftl",
+                printWriter, typeSchema.toMap()));
     }
 }

@@ -48,7 +48,7 @@ public class CompositeType extends Type {
         Map<String, Object> superMap = super.toMutableMap();
         List<Map<String, Object>> mapList = fieldList.stream().map(Field::toMap)
             .collect(Collectors.toUnmodifiableList());
-        superMap.put("field", mapList);
+        superMap.put("fields", mapList);
         return superMap;
     }
 
