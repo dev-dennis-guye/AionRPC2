@@ -2,6 +2,7 @@ package org.aion.rpcgenerator.util;
 
 import ch.qos.logback.classic.Level;
 import java.io.File;
+import java.util.regex.Pattern;
 import org.slf4j.Logger;
 
 public class Utils {
@@ -14,7 +15,12 @@ public class Utils {
         ((ch.qos.logback.classic.Logger)logger).setLevel(Level.INFO);
     }
 
-    public static String appendToPath(String output, String types) {
-        return output + File.separator + types;
+    public static String appendToPath(String path, String fileName) {
+        return path + File.separator + fileName;
+    }
+
+    private static final Pattern JAVA_TEMPLATE_FILE_PATTERN = Pattern.compile("java_([a-zA-Z]_?)+\\.ftl$");
+    public static boolean isJavaTemplate(String path){
+        return JAVA_TEMPLATE_FILE_PATTERN.matcher(path).find();
     }
 }
