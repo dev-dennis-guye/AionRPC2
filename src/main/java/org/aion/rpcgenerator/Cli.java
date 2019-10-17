@@ -12,6 +12,7 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.xml.parsers.ParserConfigurationException;
 import org.aion.rpcgenerator.data.TypeSchema;
@@ -132,7 +133,7 @@ public class Cli implements Runnable {
     }
 
 
-    private void processAllErrors(File outputFile, List<ErrorSchema> errorSchemas,
+     void processAllErrors(File outputFile, List<ErrorSchema> errorSchemas,
         String templatePath, Configuration configuration)
         throws IOException, TemplateException {
         try {
@@ -174,7 +175,7 @@ public class Cli implements Runnable {
     }
 
 
-    private void processAllTemplates(File outputFile, RPCSchema rpcSchema, String templatePath,
+    void processAllTemplates(File outputFile, RPCSchema rpcSchema, String templatePath,
         Configuration configuration)
         throws IOException, TemplateException {
         try {
@@ -209,7 +210,7 @@ public class Cli implements Runnable {
         }
     }
 
-    private void processAllTypes(File outputFile, TypeSchema typeSchema, String templatePath, Configuration configuration)
+    void processAllTypes(File outputFile, TypeSchema typeSchema, String templatePath, Configuration configuration)
         throws IOException, TemplateException {
         try{
             createDir(outputFile);
@@ -234,7 +235,7 @@ public class Cli implements Runnable {
                 File temp = new File(
                     Utils.appendToPath(outputFile.getAbsolutePath(), outputFileName));
                 if (createOutputFile(temp)) {
-                    try (PrintWriter printWriter = new PrintWriter(temp)) {
+                    try (Writer printWriter = new PrintWriter(temp)) {
                         process(configuration, templateFile, printWriter,
                             typeSchema.toMap());
                     }
@@ -249,6 +250,7 @@ public class Cli implements Runnable {
 
     void process(Configuration configuration, String ftlFile, Writer writer, Map map)
         throws IOException, TemplateException {
+        logger.debug("Processing template with object map: {}", map);
         Template template = configuration.getTemplate(ftlFile);
         template.process(map, writer);
     }
@@ -304,9 +306,12 @@ public class Cli implements Runnable {
             throw new IllegalStateException("The spec directory is not a folder");
         }
         //noinspection ConstantConditions
-        long fileCount = Arrays.stream(file.list()).filter(path -> path
-            .endsWith(".xml")).count();
-        if (fileCount == 0) {
+        List<String> files = List.of("errors.xml", "types.xml");
+        Pattern regex = Pattern.compile("-rpc");
+        //Check that the required files exist
+        boolean containsXMLSpecFiles = Arrays.stream(file.list()).filter(path -> path
+            .endsWith(".xml")).allMatch(f-> files.contains(f) || regex.matcher(f).find());
+        if (containsXMLSpecFiles) {
             logger.warn("Could not find any template files in the path.");
             throw new IllegalStateException("The spec directory is not a folder");
         }

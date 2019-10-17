@@ -12,7 +12,7 @@
         </type-composite>
     </composite>
     <constrained>
-        <type-constrained baseType="string" max="infinity"
+        <type-constrained baseType="byte-array" max="infinity"
             min="4" regex="^0x([0-9a-fA-F][0-9a-fA-F])+" typeName="data_hex_string"/>
         <type-constrained baseType="bigint" max="infinity" min="3" regex="^0x[0-9a-fA-F]+"
             typeName="hex_string"/>
@@ -20,7 +20,6 @@
             typeName="long_hex_string"/>
         <type-constrained baseType="int" min="3" max="11" regex="^0x[0-9a-fA-F]+"
             typeName="int_hex_string"/>
-        <type-constrained baseType="data_hex_string" max="66" min="66" typeName="address"/>
     </constrained>
     <enum>
         <type-enum typeName="version_string" internalType = "string">
@@ -40,5 +39,7 @@
         <type-primitive typeName="long"/>
         <type-primitive typeName="int"/>
         <type-primitive typeName="bigint"/>
+        <type-primitive typeName="byte-array"/>
+        <type-primitive typeName="address"/>
     </primitives>
 </types>

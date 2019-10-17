@@ -22,18 +22,18 @@ public class ConstrainedType extends Type {
         else {
             regex=".*";
         }
-        if (XMLUtils.hasAttribute(node, "min")) {
-            min = Integer.MAX_VALUE;
-        } else {
-            min = Integer.parseInt(XMLUtils.valueFromAttribute(node, "min"));
-        }
 
         if (XMLUtils.hasAttribute(node, "min")) {
-            max = Integer.MAX_VALUE;
+            min = Integer.parseInt(XMLUtils.valueFromAttribute(node, "min"));
         } else {
-            String maxStr = (XMLUtils.valueFromAttribute(node, "min"));
-            max =
-                maxStr.equalsIgnoreCase("infinity") ? Integer.MAX_VALUE : Integer.parseInt(maxStr);
+            min = -1;
+        }
+
+        if (XMLUtils.hasAttribute(node, "max")) {
+            String maxStr = (XMLUtils.valueFromAttribute(node, "max"));
+            max = maxStr.equalsIgnoreCase("infinity") ? Integer.MAX_VALUE : Integer.parseInt(maxStr);
+        } else {
+            max = Integer.MAX_VALUE;
         }
         baseType = XMLUtils.valueFromAttribute(node, "baseType");
     }

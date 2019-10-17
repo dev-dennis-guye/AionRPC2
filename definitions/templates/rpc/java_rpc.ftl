@@ -3,46 +3,56 @@
 package org.aion.api.server.rpc3;
 
 import static org.aion.api.server.rpc3.RPCExceptions.*;
-package org.aion.api.server.rpc3.types.RPCTypes.*;
-package org.aion.api.server.rpc3.types.RPCTypeConverter.*;
+import static org.aion.api.server.rpc3.types.RPCTypes.*;
+import static org.aion.api.server.rpc3.types.RPCTypesConverter.*;
+import org.aion.util.types.ByteArrayWrapper;
+import org.aion.types.AionAddress;
 
+/******************************************************************************
+*
+* AUTO-GENERATED SOURCE FILE.  DO NOT EDIT MANUALLY -- YOUR CHANGES WILL
+* BE WIPED OUT WHEN THIS FILE GETS RE-GENERATED OR UPDATED.
+*
+*****************************************************************************/
 public abstract class ${class_name}RPC{
 
-    public Object execute(String requestString){
+    <#if comments?has_content>
+    /**
+    <#list comments as comment> *${comment}</#list>
+     */
+    </#if>
+    public String execute(String requestString){
         <#if errors?has_content>
         try{
         </#if>
 
-        RequestObject request = ${class_name}Codec.RequestObject.decode(requestString);
-        //check that the request can be fulfilled by this class
-        String interfaceName = request.method.split("_")[0];
-        if(interfaceName.equals(${rpc})){
+            Request request = RequestConverter.decode(requestString);
+            //check that the request can be fulfilled by this class
+            String interfaceName = request.method.split("_")[0];
+            if(interfaceName.equals("${rpc}")){
             <#list methods as method>
-                if(requestObject.method.contains("${method.name}")){
-                    ${macros.toJavaType(method.param.name)} params=${macros.toJavaConverter(method.returnType.name)}.decode(request.params);
+                if(request.method.equals("${method.name}")){
+                    ${macros.toJavaType(method.param)} params=${macros.toJavaConverter(method.param.name)}.decode(request.params);
 
-                    ${macros.toJavaType(method.returnType.name)} result = ${method.name}(<#list method.param.fields as parameter>params.${parameter.fieldName}<#if parameter_has_next>,</#if></#list>);
-                    return ${macros.toJavaConverter(method.returnType.name)}
-                            .encode(result);
+                    ${macros.toJavaType(method.returnType)} result = ${method.name}(<#list method.param.fields as parameter>params.${parameter.fieldName}<#if parameter_has_next>,</#if></#list>);
+                    return ${macros.toJavaConverter(method.returnType.name)}.encode(result);
                 }
                 else
             </#list>
                     throw new ${macros.toJavaException("MethodNotFound")}();
-        }
-        else{
-            throw new ${macros.toJavaException("InternalError")}();
-        }
+            }
+            else{
+                throw new ${macros.toJavaException("InternalError")}();
+            }
         <#if errors?has_content>
         }
-        <#list errors as error >
-        catch(${macros.toJavaException(error.error_class)} e){
-            return e.getMessage;
+        catch(<#list errors as error >${macros.toJavaException(error.error_class)}<#if error_has_next> |</#if></#list> e){
+            return e.getMessage();
         }
-        </#list>
         </#if>
     }
 
     <#list methods as method>
-    protected abstract ${macros.toJavaType(method.returnType.name)} ${method.name}(<#list method.param.fields as parameter>${macros.toJavaType(parameter.type.name)} ${parameter.fieldName}<#if parameter_has_next>,</#if></#list>);
+    protected abstract ${macros.toJavaType(method.returnType)} ${method.name}(<#list method.param.fields as parameter>${macros.toJavaType(parameter.type)} ${parameter.fieldName}<#if parameter_has_next>,</#if></#list>);
     </#list>
 }
