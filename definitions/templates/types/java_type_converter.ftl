@@ -195,7 +195,7 @@ public class RPCTypesConverter{
     public static class ${macros.toJavaConverter(compositeType.name)}{
         public static ${macros.toJavaType(compositeType)} decode(Object str){
             try{
-                JSONObject jsonObject = new JSONObject(str);
+                JSONObject jsonObject = new JSONObject(((String) str).replaceAll("\"","\""));
                 return new ${macros.toJavaType(compositeType)}(<#list compositeType.fields as field> ${macros.toJavaConverter(field.type.name)}.decode(jsonObject.opt("${field.fieldName}")) <#if field_has_next>,</#if></#list>);
             } catch (Exception e){
                 throw new ${macros.toJavaException(decodeError.error_class)}();
@@ -209,7 +209,7 @@ public class RPCTypesConverter{
                 <#list compositeType.fields as field>
                 jsonObject.put("${field.fieldName}", ${macros.toJavaConverter(field.type.name)}.encode(obj.${field.fieldName}));
                 </#list>
-                return jsonObject.toString();
+                return jsonObject.toString().replaceAll("\"","\"");
             }
             catch (Exception e){
                 throw new ${macros.toJavaException(encodeError.error_class)}();
@@ -262,7 +262,7 @@ public class RPCTypesConverter{
 <#list paramTypes as paramType>
     public static class ${macros.toJavaConverter(paramType.name)}{
         public static ${macros.toJavaType(paramType)} decode(Object object){
-            String s = object.toString();
+            String s = object.toString().replaceAll("\"","\"");
             try{
                 ${macros.toJavaType(paramType)} obj;
                 if(s.startsWith("[") && s.endsWith("]")){
@@ -287,7 +287,7 @@ public class RPCTypesConverter{
                 JSONArray arr = new JSONArray();
                 <#list paramType.fields as param>
                 arr.put(${param.index}, ${macros.toJavaConverter(param.type.name)}.encode(obj.${param.fieldName}));
-                </#list>return arr.toString();
+                </#list>return arr.toString().replaceAll("\"","\"");
             }catch(Exception e){
                 throw new ${macros.toJavaException(decodeError.error_class)}();
             }

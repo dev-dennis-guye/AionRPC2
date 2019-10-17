@@ -19,7 +19,7 @@
         <type-params-wrapper typeName="ecRecoverParams"/>
     </types>
     <methods>
-        <method name="personal_ecRecover" returnType="data_hex_string" param="ecRecoverParams">
+        <method name="personal_ecRecover" returnType="address" param="ecRecoverParams">
             <comment>Returns the key used to sign an input string.</comment>
         </method>
     </methods>

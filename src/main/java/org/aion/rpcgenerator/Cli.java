@@ -183,16 +183,19 @@ public class Cli implements Runnable {
             //noinspection ConstantConditions
             List<String> errorTemplates = Arrays
                 .stream(Paths.get(templatePath).toFile().listFiles()).filter(
-                    p -> p.getName().endsWith("rpc.ftl"))
+                    p -> p.getName().endsWith("rpc.ftl") || p.getName().endsWith("entry_point.ftl"))
                 .map(File::getPath).collect(Collectors.toUnmodifiableList());
             for (String templateFile : errorTemplates) {
                 String outputFileName;
                 if (Utils.isJavaTemplate(templateFile)) {
-                    outputFileName =
-                        rpcSchema.getRpc().substring(0, 1).toUpperCase() + rpcSchema.getRpc()
-                            .substring(1) +"RPC.java";
+                    if (templateFile.endsWith("rpc.ftl")) {
+                        outputFileName ="RPC.java";
+                    } else {
+                        outputFileName="RPCEntryPoint.java";
+                    }
                 } else {
-                    outputFileName = "";
+                    logger.warn("Encountered an unexpected file: {}", templateFile);
+                    continue;
                 }
                 File temp = new File(
                     Utils.appendToPath(outputFile.getAbsolutePath(), outputFileName));

@@ -23,4 +23,10 @@ public class Utils {
     public static boolean isJavaTemplate(String path){
         return JAVA_TEMPLATE_FILE_PATTERN.matcher(path).find();
     }
+
+    private static final Pattern RUST_TEMPLATE_FILE_PATTERN = Pattern.compile("rust_([a-zA-Z]_?)+\\.ftl$");
+
+    public static boolean isRustTemplate(String path){
+        return RUST_TEMPLATE_FILE_PATTERN.matcher(path).find();
+    }
 }

@@ -19,7 +19,7 @@ public class RPCTypes{
     </#list>
     */
     </#if>
-    public static class ${macros.toJavaType(composite_type)} {
+    public static final class ${macros.toJavaType(composite_type)} {
     <#list composite_type.fields as field>
         public final ${macros.toJavaType(field.type)} ${field.fieldName};
     </#list>
@@ -64,7 +64,7 @@ public class RPCTypes{
         <#list paramType.comments as comment>* ${comment}</#list>
         */
     </#if>
-    public static class ${macros.toJavaType(paramType)} {
+    public static final class ${macros.toJavaType(paramType)} {
     <#list paramType.fields as field>
         public final ${macros.toJavaType(field.type)} ${field.fieldName};
     </#list>
