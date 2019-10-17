@@ -38,7 +38,7 @@ public final class RPCEntryPoint{
                     throw new ${macros.toJavaException("InvalidParams")}();
                 }
                 ${macros.toJavaType(method.returnType)} result = rpc.${method.name}(<#list method.param.fields as parameter>params.${parameter.fieldName}<#if parameter_has_next>,</#if></#list>);
-                return ${macros.toJavaConverter(method.returnType.name)}.encode(result);
+                return ResponseConverter.encode(new Response(request.id, ${macros.toJavaConverter(method.returnType.name)}.encode(result), VersionType.Version2);
             }
             else
             </#list>

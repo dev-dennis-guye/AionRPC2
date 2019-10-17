@@ -20,6 +20,8 @@
         <#return "Integer">
     <#elseif typeName=="bigint">
         <#return "BigInteger">
+    <#elseif typeName=="response">
+        <#return "Response">
     <#else >
         <#return "">
     </#if>
@@ -69,6 +71,8 @@
         <#return "Integer">
     <#elseif typeName=="bigint">
         <#return "BigInteger">
+    <#elseif typeName=="response">
+        <#return "Response">
     <#else >
         <#return "">
     </#if>

@@ -5,10 +5,16 @@
     <composite>
         <type-composite typeName="request">
             <comment>This is the standard request body for a JSON RPC Request</comment>
-            <field fieldName="id" required="true" type="int"/>
+            <field fieldName="id" required="false" type="int"/>
             <field fieldName="method" required="true" type="string"/>
             <field fieldName="params" required="true" type="string"/>
             <field fieldName="jsonRPC" required="false" type="version_string"/>
+        </type-composite>
+        <type-composite typeName="response">
+            <comment>This is the standard request body for a JSON RPC Response</comment>
+            <field fieldName="id" required="false" type="int"/>
+            <field fieldName="result" required="true" type="string"/>
+            <field fieldName="jsonRPC" required="true" type="version_string"/>
         </type-composite>
     </composite>
     <constrained>
