@@ -188,11 +188,9 @@ public class Cli implements Runnable {
             for (String templateFile : errorTemplates) {
                 String outputFileName;
                 if (Utils.isJavaTemplate(templateFile)) {
-                    if (templateFile.endsWith("rpc.ftl")) {
-                        outputFileName ="RPC.java";
-                    } else {
-                        outputFileName="RPCEntryPoint.java";
-                    }
+                    outputFileName =
+                        rpcSchema.getRpc().substring(0, 1).toUpperCase() + rpcSchema.getRpc()
+                            .substring(1) +"RPC.java";
                 } else {
                     logger.warn("Encountered an unexpected file: {}", templateFile);
                     continue;

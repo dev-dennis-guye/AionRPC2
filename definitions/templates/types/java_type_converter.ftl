@@ -22,6 +22,18 @@ public class RPCTypesConverter{
     private static final Pattern hexPattern= Pattern.compile("^0x[0-9a-fA-F]+");
     private static final Pattern decPattern = Pattern.compile("^[0-9]+");
 
+    public static class ${macros.toJavaConverter("any")}{
+
+        public static String decode(Object s){
+            if(s==null) return null;
+            return s.toString();
+        }
+
+        public static Object encode(Object obj){
+            return obj;
+        }
+    }
+
     public static class ${macros.toJavaConverter("string")}{
 
         public static String decode(Object s){
@@ -51,9 +63,9 @@ public class RPCTypesConverter{
             }
         }
 
-        public static String encode(Long s){
+        public static Long encode(Long s){
             try{
-                return s.toString();
+                return s;
             }catch (Exception e){
                 throw new ${macros.toJavaException(encodeError.error_class)}();
             }
@@ -87,9 +99,9 @@ public class RPCTypesConverter{
             }
         }
 
-        public static String encode(Integer s){
+        public static Integer encode(Integer s){
             try{
-                return s.toString();
+                return s;
             }catch (Exception e){
                 throw new ${macros.toJavaException(encodeError.error_class)}();
             }

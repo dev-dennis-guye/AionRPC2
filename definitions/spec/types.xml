@@ -13,10 +13,14 @@
         <type-composite typeName="response">
             <comment>This is the standard request body for a JSON RPC Response</comment>
             <field fieldName="id" required="false" type="int"/>
-            <field fieldName="result" required="true" type="string"/>
+            <field fieldName="result" required="false" type="any"/>
             <field fieldName="jsonRPC" required="true" type="version_string"/>
         </type-composite>
     </composite>
+    <array>
+        <type-list name="batch-request" nestedType="request"/>
+        <type-list name="batch-response" nestedType="response"/>
+    </array>
     <constrained>
         <type-constrained baseType="byte-array" max="infinity"
             min="4" regex="^0x([0-9a-fA-F][0-9a-fA-F])+" typeName="data_hex_string"/>
@@ -41,6 +45,7 @@
         <!-- return type specific to each method-->
     </param>
     <primitives>
+        <type-primitive typeName="any"/>
         <type-primitive typeName="string"/>
         <type-primitive typeName="long"/>
         <type-primitive typeName="int"/>

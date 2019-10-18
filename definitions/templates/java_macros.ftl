@@ -22,6 +22,8 @@
         <#return "BigInteger">
     <#elseif typeName=="response">
         <#return "Response">
+    <#elseif typeName=="any">
+        <#return "Object">
     <#else >
         <#return "">
     </#if>
@@ -73,6 +75,8 @@
         <#return "BigInteger">
     <#elseif typeName=="response">
         <#return "Response">
+    <#elseif typeName=="any">
+        <#return "Object">
     <#else >
         <#return "">
     </#if>

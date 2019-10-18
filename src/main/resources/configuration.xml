@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<config>
+    <definitions>
+        <!--The file nam-->
+        <error value="errors.xml"/>
+        <rpc value="rpc.xml"/>
+        <type value="type.xml"/>
+    </definitions>
+    <rpc-templates>
+        <template value="rpc.ftl"/>
+    </rpc-templates>
+    <type-templates>
+        <template value="types.ftl|type_converter.ftl"/>
+    </type-templates>
+    <error-templates>
+        <template value="exceptions.ftl"/>
+    </error-templates>
+</config>
