@@ -9,7 +9,8 @@ enum TypeName {
     TYPE_CONSTRAINED("type-constrained"),
     TYPE_ENUM("type-enum"),
     TYPE_COMPOSITE("type-composite"),
-    TYPE_PARAMS_WRAPPER("type-params-wrapper");
+    TYPE_PARAMS_WRAPPER("type-params-wrapper"),
+    TYPE_ARRAY("type-list");
     private static List<TypeName> typeNames = Arrays.asList(TypeName.values());
     String typeName;
 

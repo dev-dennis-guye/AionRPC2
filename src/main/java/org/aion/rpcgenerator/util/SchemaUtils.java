@@ -2,6 +2,7 @@ package org.aion.rpcgenerator.util;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import org.aion.rpcgenerator.data.ArrayType;
 import org.aion.rpcgenerator.data.CompositeType;
 import org.aion.rpcgenerator.data.ConstrainedType;
 import org.aion.rpcgenerator.data.EnumType;
@@ -33,6 +34,8 @@ public class SchemaUtils {
                 ((EnumType) type).setEnumTypes(types);
             } else if (type instanceof ParamType) {
                 ((ParamType) type).setFieldTypeDef(types);
+            } else if (type instanceof ArrayType){
+                ((ArrayType) type).setNestedType(types);
             }
         }
     }

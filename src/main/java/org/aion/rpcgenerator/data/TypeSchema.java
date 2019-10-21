@@ -21,6 +21,7 @@ public class TypeSchema implements Mappable {
     private List<Type> enumTypes;
     private List<Type> paramTypes;
     private List<Type> primitiveTypes;
+    private List<Type> arrayType;
     private ErrorSchema decodeError;
     private ErrorSchema encodeError;
 
@@ -31,6 +32,7 @@ public class TypeSchema implements Mappable {
         enumTypes = readTypes(root, "enum", "type-enum");
         paramTypes = readTypes(root, "param", "type-params-wrapper");
         primitiveTypes = readTypes(root, "primitives", "type-primitive");
+        arrayType = readTypes(root, "array", "type-list");
         decodeErrorName = readErrorName(root, "decode-error");
         encodeErrorName = readErrorName(root, "encode-error");
         SchemaUtils.initializeTypes(toList());
@@ -84,13 +86,15 @@ public class TypeSchema implements Mappable {
                 paramTypes.stream().map(Type::toMap).collect(Collectors.toUnmodifiableList())),
             Map.entry("primitivesTypes",
                 primitiveTypes.stream().map(Type::toMap).collect(Collectors.toUnmodifiableList())),
+            Map.entry("arrayTypes",
+                arrayType.stream().map(Type::toMap).collect(Collectors.toUnmodifiableList())),
             Map.entry("encodeError", encodeError.toMap()),
             Map.entry("decodeError", decodeError.toMap())
         );
     }
 
     public List<Type> toList() {
-        return Stream.of(compositeTypes, constrainedTypes, enumTypes, paramTypes, primitiveTypes)
+        return Stream.of(compositeTypes, constrainedTypes, enumTypes, paramTypes, primitiveTypes, arrayType)
             .flatMap(Collection::stream)
             .collect(Collectors.toUnmodifiableList());
     }

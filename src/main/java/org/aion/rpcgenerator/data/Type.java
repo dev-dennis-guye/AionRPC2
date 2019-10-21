@@ -48,6 +48,8 @@ public abstract class Type implements Mappable {
                 return new CompositeType(node);
             case TYPE_PARAMS_WRAPPER:
                 return new ParamType(node);
+            case TYPE_ARRAY:
+                return new ArrayType(node);
             default:
                 throw new IllegalArgumentException();
         }

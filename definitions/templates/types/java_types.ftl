@@ -26,7 +26,7 @@ public class RPCTypes{
 
         public ${macros.toJavaType(composite_type)}(<#list composite_type.fields as field>${macros.toJavaType(field.type)} ${field.fieldName} <#if field_has_next>,</#if></#list>){
             <#list composite_type.fields as field><#if field.required=="true" >
-            if(${field.fieldName}==null) throw new ${macros.toJavaException("ParseError")}();
+            if(${field.fieldName}==null) throw ${macros.toJavaException("ParseError")}.INSTANCE;
             </#if>
             this.${field.fieldName}=${field.fieldName};
             </#list>
@@ -53,7 +53,7 @@ public class RPCTypes{
             if(x.equals("${value.value}")){
                 return ${value.name};
             }else</#list>
-                throw new ${macros.toJavaException("ParseError")}();
+                throw ${macros.toJavaException("ParseError")}.INSTANCE;
         }
     }
 </#list>
@@ -71,7 +71,7 @@ public class RPCTypes{
 
         public ${macros.toJavaType(paramType)}(<#list paramType.fields as field>${macros.toJavaType(field.type)} ${field.fieldName} <#if field_has_next>,</#if></#list>){
     <#list paramType.fields as field><#if field.required=="true" >
-            if(${field.fieldName}==null) throw new ${macros.toJavaException("ParseError")}();
+            if(${field.fieldName}==null) throw ${macros.toJavaException("ParseError")}.INSTANCE;
     </#if>
             this.${field.fieldName}=${field.fieldName};
     </#list>

@@ -8,18 +8,24 @@
             <field fieldName="id" required="false" type="int"/>
             <field fieldName="method" required="true" type="string"/>
             <field fieldName="params" required="true" type="string"/>
-            <field fieldName="jsonRPC" required="false" type="version_string"/>
+            <field fieldName="jsonrpc" required="false" type="version_string"/>
         </type-composite>
         <type-composite typeName="response">
-            <comment>This is the standard request body for a JSON RPC Response</comment>
+            <comment>This is the standard response body for a JSON RPC Request</comment>
             <field fieldName="id" required="false" type="int"/>
             <field fieldName="result" required="false" type="any"/>
-            <field fieldName="jsonRPC" required="true" type="version_string"/>
+            <field fieldName="error" required="false" type="error"/>
+            <field fieldName="jsonrpc" required="true" type="version_string"/>
+        </type-composite>
+        <type-composite typeName="error">
+            <comment>Contains the error messages for failed JSON RPC Requests</comment>
+            <field fieldName="code" required="true" type="int"/>
+            <field fieldName="message" required="true" type="string" />
         </type-composite>
     </composite>
     <array>
-        <type-list name="batch-request" nestedType="request"/>
-        <type-list name="batch-response" nestedType="response"/>
+        <type-list typeName="array" nestedType="request"/>
+        <type-list typeName="array" nestedType="response"/>
     </array>
     <constrained>
         <type-constrained baseType="byte-array" max="infinity"

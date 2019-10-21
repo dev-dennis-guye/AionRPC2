@@ -9,6 +9,8 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import javax.swing.text.html.Option;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -59,5 +61,14 @@ public class XMLUtils {
             }
         }
         return Collections.unmodifiableList(elements);
+    }
+
+    public static Optional<Element> elementFromTag(Element parent, String tag){
+        NodeList nodeList = parent.getElementsByTagName(tag);
+        if (nodeList.getLength()>0){
+            return Optional.of((Element) nodeList.item(0));
+        }else {
+            return Optional.empty();
+        }
     }
 }

@@ -4,6 +4,10 @@
         <#return toJavaType(type.baseType)>
     <#elseif typeName == "string">
         <#return "String">
+    <#elseif typeName == "error">
+        <#return "Error">
+    <#elseif typeName == "array">
+        <#return "List<${toJavaType(type.nestedType)}>">
     <#elseif typeName == "byte-array">
         <#return "ByteArrayWrapper">
     <#elseif typeName == "address" >
@@ -42,7 +46,15 @@
 </#function>
 
 <#function toJavaConverter converterType>
-    <#return "${toCamelCase(converterType)}Converter">
+    <#if converterType.nestedType?has_content>
+        <#return "${toCamelCase(converterType.nestedType.name)}ListConverter">
+    <#else >
+        <#return "${toCamelCase(converterType.name)}Converter">
+    </#if>
+</#function>
+
+<#function toJavaConverterFromName name>
+    <#return "${toCamelCase(name)}Converter">
 </#function>
 
 <#function toCamelCase typeName>
@@ -75,6 +87,8 @@
         <#return "BigInteger">
     <#elseif typeName=="response">
         <#return "Response">
+    <#elseif typeName=="error">
+        <#return "Error">
     <#elseif typeName=="any">
         <#return "Object">
     <#else >

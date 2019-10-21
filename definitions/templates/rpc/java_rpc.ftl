@@ -17,44 +17,44 @@ import java.util.Set;
 *****************************************************************************/
 public interface ${class_name}RPC{
 
-    default String execute(Request request){
+    default Object execute(Request request){
         Object res;
     <#if errors?has_content>
         try{
     </#if>
             //check that the request can be fulfilled by this class
             <#list methods as method>
-            if(request.method.equals("${method.name}")){
+            if(request.method.equals("${rpc}_${method.name}")){
                 ${macros.toJavaType(method.param)} params;
                 try{
-                    params=${macros.toJavaConverter(method.param.name)}.decode(request.params);
+                    params=${macros.toJavaConverter(method.param)}.decode(request.params);
                 }catch(Exception e){
-                    throw new ${macros.toJavaException("InvalidParams")}();
+                    throw ${macros.toJavaException("InvalidParams")}.INSTANCE;
                 }
-                ${macros.toJavaType(method.returnType)} result = this.${method.name}(<#list method.param.fields as parameter>params.${parameter.fieldName}<#if parameter_has_next>,</#if></#list>);
-                res = ${macros.toJavaConverter(method.returnType.name)}.encode(result);
+                ${macros.toJavaType(method.returnType)} result = this.${rpc}_${method.name}(<#list method.param.fields as parameter>params.${parameter.fieldName}<#if parameter_has_next>,</#if></#list>);
+                res = ${macros.toJavaConverter(method.returnType)}.encode(result);
             }else
             </#list>
-                throw new ${macros.toJavaException("MethodNotFound")}();
+                throw ${macros.toJavaException("MethodNotFound")}.INSTANCE;
     <#if errors?has_content>
         }
         catch(<#list errors as error >${macros.toJavaException(error.error_class)}<#if error_has_next> |</#if></#list> e){
-            return e.getMessage();
+            throw e;
         }
         catch(Exception e){
-            return new ${macros.toJavaException("InternalError")}().getMessage();
+            throw ${macros.toJavaException("InternalError")}.INSTANCE;
         }
 </#if>
-        return ResponseConverter.encode(new Response(request.id, res , VersionType.Version2));
+        return res;
     }
 
     boolean isExecutable(String method);
 
     default Set<String> listMethods(){
-        return Set.of(<#list methods as method> "${method.name}"<#if method_has_next>,</#if></#list>);
+        return Set.of(<#list methods as method> "${rpc}_${method.name}"<#if method_has_next>,</#if></#list>);
     }
 
     <#list methods as method>
-    ${macros.toJavaType(method.returnType)} ${method.name}(<#list method.param.fields as parameter>${macros.toJavaType(parameter.type)} ${parameter.fieldName}<#if parameter_has_next>,</#if></#list>);
+    ${macros.toJavaType(method.returnType)} ${rpc}_${method.name}(<#list method.param.fields as parameter>${macros.toJavaType(parameter.type)} ${parameter.fieldName}<#if parameter_has_next>,</#if></#list>);
     </#list>
 }
