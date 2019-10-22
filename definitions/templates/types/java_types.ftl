@@ -1,9 +1,8 @@
 <#import "../java_macros.ftl" as macros>
-package org.aion.api.server.rpc3.types;
+package org.aion.rpc.types;
 
-import org.aion.api.server.rpc3.RPCExceptions.ParseErrorRPCException;
+import org.aion.rpc.errors.RPCExceptions.*;
 import org.aion.util.types.ByteArrayWrapper;
-import org.aion.types.AionAddress;
 /******************************************************************************
 *
 * AUTO-GENERATED SOURCE FILE.  DO NOT EDIT MANUALLY -- YOUR CHANGES WILL
@@ -49,6 +48,7 @@ public class RPCTypes{
         }
 
         public static ${macros.toJavaType(enum)} fromString(String x){
+            if(x==null) throw ${macros.toJavaException("ParseError")}.INSTANCE;
             <#list enum.values as value>
             if(x.equals("${value.value}")){
                 return ${value.name};

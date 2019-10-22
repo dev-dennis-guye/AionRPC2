@@ -27,6 +27,7 @@ import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
+//TODO move the template and spec filenames to an external file/configuration step
 @Command(name = "generator", mixinStandardHelpOptions = true)
 public class Cli implements Runnable {
 
@@ -183,14 +184,18 @@ public class Cli implements Runnable {
             //noinspection ConstantConditions
             List<String> errorTemplates = Arrays
                 .stream(Paths.get(templatePath).toFile().listFiles()).filter(
-                    p -> p.getName().endsWith("rpc.ftl") || p.getName().endsWith("entry_point.ftl"))
+                    p -> p.getName().endsWith("rpc.ftl") || p.getName().endsWith("rpc_client.ftl"))
                 .map(File::getPath).collect(Collectors.toUnmodifiableList());
             for (String templateFile : errorTemplates) {
                 String outputFileName;
                 if (Utils.isJavaTemplate(templateFile)) {
-                    outputFileName =
-                        rpcSchema.getRpc().substring(0, 1).toUpperCase() + rpcSchema.getRpc()
-                            .substring(1) +"RPC.java";
+                    if(templateFile.endsWith("rpc.ftl")) {
+                        outputFileName =
+                            rpcSchema.getRpc().substring(0, 1).toUpperCase() + rpcSchema.getRpc()
+                                .substring(1) + "RPC.java";
+                    } else {
+                        outputFileName=rpcSchema.getRpc().substring(0,1).toUpperCase() + rpcSchema.getRpc().substring(1) +".java";
+                    }
                 } else {
                     logger.warn("Encountered an unexpected file: {}", templateFile);
                     continue;

@@ -1,14 +1,20 @@
 <#import "../java_macros.ftl" as macros/>
 <#global class_name = macros.toJavaClassName(rpc)/>
-package org.aion.api.server.rpc3;
+package org.aion.rpc.server;
 
-import static org.aion.api.server.rpc3.RPCExceptions.*;
-import static org.aion.api.server.rpc3.types.RPCTypes.*;
-import static org.aion.api.server.rpc3.types.RPCTypesConverter.*;
-import org.aion.util.types.ByteArrayWrapper;
-import org.aion.types.AionAddress;
+import static org.aion.rpc.errors.RPCExceptions.InternalErrorRPCException;
+import static org.aion.rpc.errors.RPCExceptions.InvalidParamsRPCException;
+import static org.aion.rpc.errors.RPCExceptions.InvalidRequestRPCException;
+import static org.aion.rpc.errors.RPCExceptions.MethodNotFoundRPCException;
+import static org.aion.rpc.errors.RPCExceptions.ParseErrorRPCException;
+
 import java.util.Set;
-
+import org.aion.rpc.types.RPCTypes.EcRecoverParams;
+import org.aion.rpc.types.RPCTypes.Request;
+import org.aion.rpc.types.RPCTypesConverter.AionAddressConverter;
+import org.aion.rpc.types.RPCTypesConverter.EcRecoverParamsConverter;
+import org.aion.types.AionAddress;
+import org.aion.util.types.ByteArrayWrapper;
 /******************************************************************************
 *
 * AUTO-GENERATED SOURCE FILE.  DO NOT EDIT MANUALLY -- YOUR CHANGES WILL
@@ -26,11 +32,7 @@ public interface ${class_name}RPC{
             <#list methods as method>
             if(request.method.equals("${rpc}_${method.name}")){
                 ${macros.toJavaType(method.param)} params;
-                try{
-                    params=${macros.toJavaConverter(method.param)}.decode(request.params);
-                }catch(Exception e){
-                    throw ${macros.toJavaException("InvalidParams")}.INSTANCE;
-                }
+                params=${macros.toJavaConverter(method.param)}.decode(request.params);
                 ${macros.toJavaType(method.returnType)} result = this.${rpc}_${method.name}(<#list method.param.fields as parameter>params.${parameter.fieldName}<#if parameter_has_next>,</#if></#list>);
                 res = ${macros.toJavaConverter(method.returnType)}.encode(result);
             }else

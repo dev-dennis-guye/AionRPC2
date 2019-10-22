@@ -1,19 +1,19 @@
 <#import "../java_macros.ftl" as macros>
-package org.aion.api.server.rpc3.types;
+package org.aion.rpc.types;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import org.aion.api.server.rpc3.types.RPCTypes.Error;
+import java.util.regex.Pattern;
+import org.aion.rpc.errors.RPCExceptions.InvalidParamsRPCException;
+import org.aion.rpc.errors.RPCExceptions.ParseErrorRPCException;
+import org.aion.rpc.types.RPCTypes.*;
 import org.aion.types.AionAddress;
 import org.aion.util.bytes.ByteUtil;
 import org.aion.util.types.ByteArrayWrapper;
-import org.aion.api.server.rpc3.types.RPCTypes.*;
-import java.util.regex.Pattern;
-import org.aion.api.server.rpc3.RPCExceptions.ParseErrorRPCException;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import java.math.BigInteger;
 
 /******************************************************************************
 *
@@ -120,6 +120,7 @@ public class RPCTypesConverter{
 
         public static String encodeHex(BigInteger bigInteger){
             try{
+                if(bigInteger==null) return null;
                 return "0x"+bigInteger.toString(16);
             } catch (Exception e){
                 throw ${macros.toJavaException(encodeError.error_class)}.INSTANCE;
@@ -128,7 +129,8 @@ public class RPCTypesConverter{
 
         public static String encode(BigInteger bigInteger){
             try{
-                return bigInteger.toString(16);
+                if(bigInteger==null) return null;
+                return bigInteger.toString(10);
             } catch(Exception e){
                 throw ${macros.toJavaException(encodeError.error_class)}.INSTANCE;
             }
@@ -214,7 +216,7 @@ public class RPCTypesConverter{
             }
         }
 
-        public static String encode( ${macros.toJavaType(compositeType)} obj){
+        public static String encodeStr( ${macros.toJavaType(compositeType)} obj){
             try{
                 if(obj==null) return null;
                 JSONObject jsonObject = new JSONObject();
@@ -228,6 +230,19 @@ public class RPCTypesConverter{
             }
         }
 
+    public static Object encode( ${macros.toJavaType(compositeType)} obj){
+    try{
+        if(obj==null) return null;
+            JSONObject jsonObject = new JSONObject();
+            <#list compositeType.fields as field>
+            jsonObject.put("${field.fieldName}", ${macros.toJavaConverter(field.type)}.encode(obj.${field.fieldName}));
+            </#list>
+            return jsonObject;
+        }
+            catch (Exception e){
+                throw ${macros.toJavaException(encodeError.error_class)}.INSTANCE;
+            }
+        }
     }
 
 </#list>
@@ -290,17 +305,18 @@ public class RPCTypesConverter{
                     throw ${macros.toJavaException(decodeError.error_class)}.INSTANCE;
                 }
                 return obj;
-            }catch(Exception e){
-                throw ${macros.toJavaException(decodeError.error_class)}.INSTANCE;
+            }
+            catch(Exception e){
+                throw ${macros.toJavaException("InvalidParams")}.INSTANCE;
             }
         }
 
-        public static String encode(${macros.toJavaType(paramType)} obj){
+        public static Object encode(${macros.toJavaType(paramType)} obj){
             try{
                 JSONArray arr = new JSONArray();
                 <#list paramType.fields as param>
                 arr.put(${param.index}, ${macros.toJavaConverter(param.type)}.encode(obj.${param.fieldName}));
-                </#list>return arr.toString().replaceAll("\\\\","");
+                </#list>return arr;
             }catch(Exception e){
                 throw ${macros.toJavaException(decodeError.error_class)}.INSTANCE;
             }
@@ -334,10 +350,19 @@ public class RPCTypesConverter{
             return Collections.unmodifiableList(temp);
         }
 
-        public static String encode(${macros.toJavaType(arrayType)} list){
+        public static Object encode(${macros.toJavaType(arrayType)} list){
             if(list==null) return null;
             JSONArray arr = new JSONArray();
 
+            for(int i=0; i < list.size();i++){
+                arr.put(${macros.toJavaConverter(arrayType.nestedType)}.encode(list.get(i)));
+            }
+            return arr;
+        }
+
+        public static String encodesStr(${macros.toJavaType(arrayType)} list){
+            if(list==null) return null;
+            JSONArray arr = new JSONArray();
             for(int i=0; i < list.size();i++){
                 arr.put(${macros.toJavaConverter(arrayType.nestedType)}.encode(list.get(i)));
             }

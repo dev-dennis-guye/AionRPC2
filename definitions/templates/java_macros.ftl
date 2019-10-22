@@ -5,7 +5,7 @@
     <#elseif typeName == "string">
         <#return "String">
     <#elseif typeName == "error">
-        <#return "Error">
+        <#return "RPCError">
     <#elseif typeName == "array">
         <#return "List<${toJavaType(type.nestedType)}>">
     <#elseif typeName == "byte-array">
@@ -88,7 +88,7 @@
     <#elseif typeName=="response">
         <#return "Response">
     <#elseif typeName=="error">
-        <#return "Error">
+        <#return "RPCError">
     <#elseif typeName=="any">
         <#return "Object">
     <#else >
