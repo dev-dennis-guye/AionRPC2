@@ -19,8 +19,8 @@ public class ${class_name}{
 
     private final Provider provider;
 
-    public ${class_name}(final Provider _provider){
-        this.provider = _provider;
+    public ${class_name}(final Provider provider){
+        this.provider = provider;
     }
 <#list methods as method>
 

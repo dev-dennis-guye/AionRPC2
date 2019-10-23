@@ -50,6 +50,49 @@ public class RPCTypesConverter{
         }
     }
 
+    public static class ${macros.toJavaConverterFromName("bool")}{
+        public static Boolean decode(Object s){
+            if ( s!=null && booleanPattern.matcher(s.toString()).find()) return Boolean.parseBoolean(s.toString());
+            else throw ParseErrorRPCException.INSTANCE;
+        }
+
+        public static Boolean encode(Boolean b){
+            return b;
+        }
+    }
+
+    public static class ${macros.toJavaConverterFromName("byte")}{
+        public static Byte decode(Object s){
+            if(s==null) return null;
+            if(hexPattern.matcher(s.toString()).find()){
+                return Byte.parseByte(s.toString().substring(2), 16);
+            }
+            else if(decPattern.matcher(s.toString()).find()){
+                return Byte.parseByte(s.toString());
+            }
+            else{
+                throw ${macros.toJavaException(decodeError.error_class)}.INSTANCE;
+            }
+        }
+
+        public static Byte encode(Byte s) {
+            try {
+                return s;
+            } catch (Exception e) {
+                throw ${macros.toJavaException(encodeError.error_class)}.INSTANCE;
+            }
+        }
+
+        public static String encodeHex(Byte s) {
+            try {
+                if (s==null) return null;
+                else return ByteUtil.oneByteToHexString(s);
+            } catch (Exception e) {
+                throw ${macros.toJavaException(encodeError.error_class)}.INSTANCE;
+            }
+        }
+    }
+
     public static class ${macros.toJavaConverterFromName("long")}{
 
         public static Long decode(Object s){
@@ -75,7 +118,8 @@ public class RPCTypesConverter{
 
         public static String encodeHex(Long s){
             try{
-                return "0x"+Long.toHexString(s);
+            if (s==null) return null;
+            else return "0x"+Long.toHexString(s);
             }catch (Exception e){
                 throw ${macros.toJavaException(encodeError.error_class)}.INSTANCE;
             }
@@ -109,7 +153,8 @@ public class RPCTypesConverter{
 
         public static String encodeHex(Integer s){
             try{
-                return "0x"+Integer.toHexString(s);
+                if (s==null) return null;
+                else return "0x"+Integer.toHexString(s);
             }catch (Exception e){
                 throw ${macros.toJavaException(encodeError.error_class)}.INSTANCE;
             }
@@ -153,28 +198,24 @@ public class RPCTypesConverter{
 
     public static class ${macros.toJavaConverterFromName("byte-array")}{
 
-        public static ByteArrayWrapper decode(Object obj){
+        public static ByteArray decode(Object obj){
             if (obj == null){
                 return null;
             }
             else if(obj instanceof byte[]){
-                return ByteArrayWrapper.wrap(((byte[])obj));
+                return new ByteArray((byte[]) obj);
             }
-            else if (obj instanceof String){
-                if (hexPattern.matcher(((String)obj)).find()){
-                    return ByteArrayWrapper.wrap(ByteUtil.hexStringToBytes((String) obj));
-                } else {
-                    return ByteArrayWrapper.wrap(((String)obj).getBytes());
-                }
+            else if (obj instanceof String && hexPattern.matcher(((String)obj)).find()){
+                return new ByteArray(ByteUtil.hexStringToBytes((String) obj));
             }
             else {
-                    throw ${macros.toJavaException(encodeError.error_class)}.INSTANCE;
+                throw ${macros.toJavaException(encodeError.error_class)}.INSTANCE;
             }
         }
 
-        public static String encode(ByteArrayWrapper bytes){
+        public static String encode(ByteArray bytes){
             if (bytes == null) return null;
-            else return "0x" + bytes.toString();
+            else return bytes.toString();
         }
     }
 
@@ -265,7 +306,7 @@ public class RPCTypesConverter{
 
         public static String encode(${macros.toJavaType(constrainedType)} obj){
             if (obj != null){
-                <#if "${macros.toJavaType(constrainedType)}"=="String" || "${macros.toJavaType(constrainedType)}"=="ByteArrayWrapper">
+                <#if "${macros.toJavaType(constrainedType)}"=="String" || "${macros.toJavaType(constrainedType)}"=="ByteArray">
                 String result = ${macros.toJavaConverter(constrainedType.baseType)}.encode(obj);
                 <#else>
                 String result = ${macros.toJavaConverter(constrainedType.baseType)}.encodeHex(obj);

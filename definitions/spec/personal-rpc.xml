@@ -7,17 +7,6 @@
         <error error_class="InvalidParams"/>
         <error error_class="InternalError"/>
     </errors>
-    <types>
-        <type-primitive typeName="string"/>
-        <type-primitive typeName="long"/>
-        <type-primitive typeName="int"/>
-        <type-constrained typeName="data_hex_string"/>
-        <type-constrained typeName="hex_string"/>
-        <type-constrained typeName="address"/>
-        <type-enum typeName="version_string"/>
-        <type-composite typeName="request"/>
-        <type-params-wrapper typeName="ecRecoverParams"/>
-    </types>
     <methods>
         <method name="ecRecover" returnType="address" param="ecRecoverParams">
             <comment>Returns the key used to sign an input string.</comment>

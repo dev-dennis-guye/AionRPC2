@@ -1,8 +1,11 @@
 <#import "../java_macros.ftl" as macros>
 package org.aion.rpc.types;
 
+import java.math.BigInteger;
+import java.util.Arrays;
 import org.aion.rpc.errors.RPCExceptions.*;
-import org.aion.util.types.ByteArrayWrapper;
+import org.aion.types.AionAddress;
+import org.aion.util.bytes.ByteUtil;
 /******************************************************************************
 *
 * AUTO-GENERATED SOURCE FILE.  DO NOT EDIT MANUALLY -- YOUR CHANGES WILL
@@ -10,6 +13,24 @@ import org.aion.util.types.ByteArrayWrapper;
 *
 *****************************************************************************/
 public class RPCTypes{
+
+    public static final class ByteArray{
+        private final byte[] bytes;
+
+        public ByteArray(byte[] bytes) {
+            this.bytes = bytes;
+        }
+
+        public byte[] toBytes(){
+            return Arrays.copyOf(bytes, bytes.length);
+        }
+
+        @Override
+        public String toString() {
+            return "0x"+ ByteUtil.toHexString(bytes);
+        }
+    }
+
 <#list compositeTypes as composite_type>
     <#if composite_type.comments?has_content>
     /**

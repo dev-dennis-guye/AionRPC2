@@ -9,10 +9,8 @@ import static org.aion.rpc.errors.RPCExceptions.MethodNotFoundRPCException;
 import static org.aion.rpc.errors.RPCExceptions.ParseErrorRPCException;
 
 import java.util.Set;
-import org.aion.rpc.types.RPCTypes.EcRecoverParams;
-import org.aion.rpc.types.RPCTypes.Request;
-import org.aion.rpc.types.RPCTypesConverter.AionAddressConverter;
-import org.aion.rpc.types.RPCTypesConverter.EcRecoverParamsConverter;
+import org.aion.rpc.types.RPCTypes.*;
+import org.aion.rpc.types.RPCTypesConverter.*;
 import org.aion.types.AionAddress;
 import org.aion.util.types.ByteArrayWrapper;
 /******************************************************************************

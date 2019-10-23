@@ -6,10 +6,24 @@
         <#return "String">
     <#elseif typeName == "error">
         <#return "RPCError">
-    <#elseif typeName == "array">
+    <#elseif type.nestedType?has_content>
         <#return "List<${toJavaType(type.nestedType)}>">
+    <#elseif typeName == "byte">
+        <#return "Byte">
+    <#elseif typeName == "bool">
+        <#return "Boolean">
     <#elseif typeName == "byte-array">
-        <#return "ByteArrayWrapper">
+        <#return "ByteArray">
+    <#elseif typeName == "blockSpecifyByNumberParams">
+        <#return "BlockByNumberParams">
+    <#elseif typeName == "blockSpecifyByEnumParams">
+        <#return "BlockByEnumParams">
+    <#elseif typeName == "blockSpecifyByHashParams">
+        <#return "BlockByHashParams" >
+    <#elseif typeName == "blockdetails">
+        <#return "BlockDetails">
+    <#elseif typeName == "txDetails">
+        <#return "TransactionDetails">
     <#elseif typeName == "address" >
         <#return "AionAddress">
     <#elseif typeName="request">
@@ -28,16 +42,18 @@
         <#return "Response">
     <#elseif typeName=="any">
         <#return "Object">
+    <#elseif typeName=="txLogDetails">
+        <#return "TxLogDetails">
     <#else >
-        <#return "">
+        <#return typeName>
     </#if>
 </#function>
 
 <#function toJavaClassName className>
     <#if className=="personal">
         <#return "Personal"/>
-    <#else>
-        <#return "">
+    <#elseif className=="ops">
+        <#return "Ops">
     </#if>
 </#function>
 
@@ -63,10 +79,26 @@
         <#return "String">
     <#elseif typeName == "data_hex_string">
         <#return "DataHexString">
-    <#elseif typeName == "byte-array">
-        <#return "ByteArrayWrapper">
     <#elseif typeName == "hex_string">
         <#return "HexString">
+    <#elseif typeName == "byte">
+        <#return "Byte">
+    <#elseif typeName == "bool">
+        <#return "Boolean">
+    <#elseif typeName == "byte-array">
+        <#return "ByteArray">
+    <#elseif typeName == "blockSpecifyByNumberParams">
+        <#return "BlockByNumberParams">
+    <#elseif typeName == "blockSpecifyByEnumParams">
+        <#return "BlockByEnumParams">
+    <#elseif typeName == "blockSpecifyByHashParams">
+        <#return "BlockByHashParams" >
+    <#elseif typeName == "blockdetails">
+        <#return "BlockDetails">
+    <#elseif typeName == "txDetails">
+        <#return "TransactionDetails">
+    <#elseif typeName == "big_int_hex_string">
+        <#return "BigIntegerHexString">
     <#elseif typeName == "long_hex_string">
         <#return "LongHexString">
     <#elseif typeName == "int_hex_string">
@@ -91,7 +123,13 @@
         <#return "RPCError">
     <#elseif typeName=="any">
         <#return "Object">
+    <#elseif typeName=="txLogDetails">
+        <#return "TxLogDetails">
+    <#elseif typeName=="byte_hex_string">
+        <#return "ByteHexString">
+    <#elseif typeName=="byte_32_string">
+        <#return "Byte32String">
     <#else >
-        <#return "">
+        <#return typeName>
     </#if>
 </#function>

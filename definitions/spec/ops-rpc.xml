@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<rpc name="ops">
+    <errors>
+        <error error_class="InvalidRequest"/>
+        <error error_class="ParseError"/>
+        <error error_class="MethodNotFound"/>
+        <error error_class="InvalidParams"/>
+        <error error_class="InternalError"/>
+    </errors>
+    <methods>
+        <method name="getBlockDetailsByNumber" param="blockSpecifyByNumberParams" returnType="blockDetails">
+            <comment>Returns the details of the specified block.</comment>
+        </method>
+        <method name="getBlockDetailsByNumber" param="blockSpecifyByEnumParams" returnType="blockDetails">
+            <comment>Returns the details of the specified block.</comment>
+        </method>
+        <method name="getBlockDetailsByHash" param="blockSpecifyByHashParams" returnType="blockDetails">
+            <comment>Returns the details of the specified block.</comment>
+        </method>
+    </methods>
+    <comments>
+        <comment>Allows you to interact with accounts on the aion network and provides a handful of crypto utilities</comment>
+    </comments>
+</rpc>

@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import org.aion.rpcgenerator.Mappable;
 import org.aion.rpcgenerator.util.SchemaUtils;
@@ -55,6 +56,22 @@ public abstract class Type implements Mappable {
         }
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Type)) {
+            return false;
+        }
+        Type type = (Type) o;
+        return name.equals(type.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
+    }
 
     public final Map<String, Object> toMap() {
         return Collections.unmodifiableMap(toMutableMap());

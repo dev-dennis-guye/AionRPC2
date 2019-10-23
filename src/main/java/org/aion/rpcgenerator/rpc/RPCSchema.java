@@ -42,9 +42,6 @@ public class RPCSchema implements Mappable {
                 case ERRORS:
                     errors = getErrors(element.getChildNodes(), errorsSchemas);
                     break;
-                case TYPES:
-                    this.types = getTypes(element.getChildNodes(), types);
-                    break;
                 case METHOD:
                     methods = getMethodSchemas(element.getChildNodes());
                     break;
@@ -53,8 +50,8 @@ public class RPCSchema implements Mappable {
             }
         }
         for (MethodSchema methodSchema : methods) {
-            methodSchema.setParamType(this.types);
-            methodSchema.setReturnType(this.types);
+            methodSchema.setParamType(types.toList());
+            methodSchema.setReturnType(types.toList());
         }
     }
 
@@ -90,7 +87,7 @@ public class RPCSchema implements Mappable {
         } else {
             throw new IllegalStateException(
                 "Failed to find the following error definitions " + typeSchema.toList().stream()
-                    .filter(e -> !typeNames.contains(e.name))
+                    .filter(e -> !result.contains(e))
                     .map(e->e.name)
                     .collect(Collectors.joining(",")));
         }
