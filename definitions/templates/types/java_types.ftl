@@ -5,6 +5,7 @@ import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
 import org.aion.rpc.errors.RPCExceptions.*;
+import org.aion.rpc.types.RPCTypesConverter.*;
 import org.aion.types.AionAddress;
 import org.aion.util.bytes.ByteUtil;
 /******************************************************************************
@@ -73,7 +74,7 @@ public class RPCTypes{
             <#list unionType.unionElements as unionElement>
             if(this.${unionElement.name} != null) return ${macros.toJavaConverter(unionElement.type)}.encode(${unionElement.name});
             </#list>
-            throw new ${macros.toJavaException(encodeError.error_class)};
+            throw ${macros.toJavaException(encodeError.error_class)}.INSTANCE;
         }
 
         public static ${macros.toJavaType(unionType)} decode(Object object){
@@ -82,7 +83,7 @@ public class RPCTypes{
                 return new ${macros.toJavaType(unionType)}(${macros.toJavaConverter(unionElement.type)}.decode(object));
             }catch(Exception e){}
             </#list>
-            throw new ${macros.toJavaException(decodeError.error_class)};
+            throw ${macros.toJavaException(decodeError.error_class)}.INSTANCE;
         }
     }
 
