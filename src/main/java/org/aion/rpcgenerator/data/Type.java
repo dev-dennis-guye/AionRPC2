@@ -51,6 +51,8 @@ public abstract class Type implements Mappable {
                 return new ParamType(node);
             case TYPE_ARRAY:
                 return new ArrayType(node);
+            case TYPE_UNION:
+                return new UnionType(node);
             default:
                 throw new IllegalArgumentException();
         }

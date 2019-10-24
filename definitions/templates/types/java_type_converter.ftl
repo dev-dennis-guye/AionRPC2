@@ -25,6 +25,7 @@ public class RPCTypesConverter{
 
     private static final Pattern hexPattern= Pattern.compile("^0x[0-9a-fA-F]+");
     private static final Pattern decPattern = Pattern.compile("^-?[0-9]+");
+    private static final Pattern booleanPattern=Pattern.compile("^([Tt]rue|[Ff]alse)");
 
     public static class ${macros.toJavaConverterFromName("any")}{
 
@@ -244,7 +245,25 @@ public class RPCTypesConverter{
             else return "0x"+address.toString();
         }
     }
+<#list unionTypes as unionType>
+    public static class ${macros.toJavaConverter(unionType)}{
+        public static ${macros.toJavaType(unionType)} decode(Object str){
+            if(str==null) return null;
+            else return ${macros.toJavaType(unionType)}.decode(str);
+        }
 
+        public static Object encode(${macros.toJavaType(unionType)} obj){
+            if(obj==null) return null;
+            else return obj.encode();
+        }
+
+        public static String encodeStr(${macros.toJavaType(unionType)} obj){
+            if(obj==null) return null;
+            else return obj.encode().toString();
+        }
+    }
+
+</#list>
 <#list compositeTypes as compositeType>
     public static class ${macros.toJavaConverter(compositeType)}{
         public static ${macros.toJavaType(compositeType)} decode(Object str){
@@ -271,16 +290,15 @@ public class RPCTypesConverter{
             }
         }
 
-    public static Object encode( ${macros.toJavaType(compositeType)} obj){
-    try{
-        if(obj==null) return null;
-            JSONObject jsonObject = new JSONObject();
-            <#list compositeType.fields as field>
-            jsonObject.put("${field.fieldName}", ${macros.toJavaConverter(field.type)}.encode(obj.${field.fieldName}));
-            </#list>
-            return jsonObject;
-        }
-            catch (Exception e){
+        public static Object encode( ${macros.toJavaType(compositeType)} obj){
+            try{
+                if(obj==null) return null;
+                JSONObject jsonObject = new JSONObject();
+                <#list compositeType.fields as field>
+                jsonObject.put("${field.fieldName}", ${macros.toJavaConverter(field.type)}.encode(obj.${field.fieldName}));
+                </#list>
+                return jsonObject;
+            }catch (Exception e){
                 throw ${macros.toJavaException(encodeError.error_class)}.INSTANCE;
             }
         }

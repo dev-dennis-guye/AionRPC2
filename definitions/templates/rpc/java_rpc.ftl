@@ -19,7 +19,7 @@ import org.aion.util.types.ByteArrayWrapper;
 * BE WIPED OUT WHEN THIS FILE GETS RE-GENERATED OR UPDATED.
 *
 *****************************************************************************/
-public interface ${class_name}RPC{
+public interface ${class_name}RPC extends RPC{
 
     default Object execute(Request request){
         Object res;
@@ -47,8 +47,6 @@ public interface ${class_name}RPC{
 </#if>
         return res;
     }
-
-    boolean isExecutable(String method);
 
     default Set<String> listMethods(){
         return Set.of(<#list methods as method> "${rpc}_${method.name}"<#if method_has_next>,</#if></#list>);

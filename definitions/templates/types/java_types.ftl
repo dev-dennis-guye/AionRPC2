@@ -3,6 +3,7 @@ package org.aion.rpc.types;
 
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.List;
 import org.aion.rpc.errors.RPCExceptions.*;
 import org.aion.types.AionAddress;
 import org.aion.util.bytes.ByteUtil;
@@ -18,6 +19,9 @@ public class RPCTypes{
         private final byte[] bytes;
 
         public ByteArray(byte[] bytes) {
+            if (bytes == null) {
+                throw new NullPointerException("Byte array is null");
+            }
             this.bytes = bytes;
         }
 
@@ -29,8 +33,60 @@ public class RPCTypes{
         public String toString() {
             return "0x"+ ByteUtil.toHexString(bytes);
         }
+
+        @Override
+        public boolean equals(Object that){
+            if (that==null || !(that instanceof ByteArray) )return false;
+            else return Arrays.equals(this.bytes, ((ByteArray)that).bytes);
+        }
+
+        public static ByteArray wrap(byte[] bytes){
+            return new ByteArray(bytes);
+        }
     }
 
+<#list unionTypes as unionType>
+    <#if unionType.comments?has_content>
+    /**
+    <#list unionType.comments as comment>
+    * ${comment}
+    </#list>
+    */
+    </#if>
+    public static final class ${macros.toJavaType(unionType)}{
+        <#list unionType.unionElements as unionElement >
+        public final ${macros.toJavaType(unionElement.type)} ${unionElement.name};
+        </#list>
+        private ${macros.toJavaType(unionType)}(<#list unionType.unionElements as unionElement >${macros.toJavaType(unionElement.type)} ${unionElement.name} <#if unionElement_has_next>,</#if></#list>){
+            <#list unionType.unionElements as unionElement >
+            this.${unionElement.name}=${unionElement.name};
+            </#list>
+        }
+
+        <#list unionType.unionElements as unionElement >
+        public ${macros.toJavaType(unionType)}(${macros.toJavaType(unionElement.type)} ${unionElement.name}){
+            this(<#list 0..unionType.unionElements?size-1 as i><#if i==unionElement_index>${unionElement.name}<#else>null</#if><#if i_has_next>,</#if ></#list>);
+        }
+        </#list>
+
+        public Object encode(){
+            <#list unionType.unionElements as unionElement>
+            if(this.${unionElement.name} != null) return ${macros.toJavaConverter(unionElement.type)}.encode(${unionElement.name});
+            </#list>
+            throw new ${macros.toJavaException(encodeError.error_class)};
+        }
+
+        public static ${macros.toJavaType(unionType)} decode(Object object){
+            <#list unionType.unionElements as unionElement>
+            try{
+                return new ${macros.toJavaType(unionType)}(${macros.toJavaConverter(unionElement.type)}.decode(object));
+            }catch(Exception e){}
+            </#list>
+            throw new ${macros.toJavaException(decodeError.error_class)};
+        }
+    }
+
+</#list>
 <#list compositeTypes as composite_type>
     <#if composite_type.comments?has_content>
     /**

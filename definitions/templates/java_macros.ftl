@@ -14,14 +14,14 @@
         <#return "Boolean">
     <#elseif typeName == "byte-array">
         <#return "ByteArray">
-    <#elseif typeName == "blockSpecifyByNumberParams">
-        <#return "BlockByNumberParams">
-    <#elseif typeName == "blockSpecifyByEnumParams">
-        <#return "BlockByEnumParams">
-    <#elseif typeName == "blockSpecifyByHashParams">
-        <#return "BlockByHashParams" >
-    <#elseif typeName == "blockdetails">
+    <#elseif typeName == "blockSpecifier">
+        <#return "BlockSpecifier">
+    <#elseif typeName == "blockDetails">
         <#return "BlockDetails">
+    <#elseif typeName == "blockEnum">
+        <#return "BlockEnum">
+    <#elseif typeName=="blockSpecifierUnion">
+        <#return "BlockSpecifierUnion">
     <#elseif typeName == "txDetails">
         <#return "TransactionDetails">
     <#elseif typeName == "address" >
@@ -87,14 +87,14 @@
         <#return "Boolean">
     <#elseif typeName == "byte-array">
         <#return "ByteArray">
-    <#elseif typeName == "blockSpecifyByNumberParams">
-        <#return "BlockByNumberParams">
-    <#elseif typeName == "blockSpecifyByEnumParams">
-        <#return "BlockByEnumParams">
-    <#elseif typeName == "blockSpecifyByHashParams">
-        <#return "BlockByHashParams" >
-    <#elseif typeName == "blockdetails">
+    <#elseif typeName == "blockSpecifier">
+        <#return "BlockSpecifier">
+    <#elseif typeName == "blockDetails">
         <#return "BlockDetails">
+    <#elseif typeName == "blockEnum">
+        <#return "BlockEnum">
+    <#elseif typeName=="blockSpecifierUnion">
+        <#return "BlockSpecifierUnion">
     <#elseif typeName == "txDetails">
         <#return "TransactionDetails">
     <#elseif typeName == "big_int_hex_string">

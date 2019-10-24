@@ -8,6 +8,7 @@ import org.aion.rpcgenerator.data.ConstrainedType;
 import org.aion.rpcgenerator.data.EnumType;
 import org.aion.rpcgenerator.data.ParamType;
 import org.aion.rpcgenerator.data.Type;
+import org.aion.rpcgenerator.data.UnionType;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
@@ -36,6 +37,9 @@ public class SchemaUtils {
                 ((ParamType) type).setFieldTypeDef(types);
             } else if (type instanceof ArrayType){
                 ((ArrayType) type).setNestedType(types);
+            }
+            else if (type instanceof UnionType){
+                ((UnionType) type).setTypes(types);
             }
         }
     }

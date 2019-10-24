@@ -10,7 +10,8 @@ enum TypeName {
     TYPE_ENUM("type-enum"),
     TYPE_COMPOSITE("type-composite"),
     TYPE_PARAMS_WRAPPER("type-params-wrapper"),
-    TYPE_ARRAY("type-list");
+    TYPE_ARRAY("type-list"),
+    TYPE_UNION("type-union");
     private static List<TypeName> typeNames = Arrays.asList(TypeName.values());
     String typeName;
 

@@ -8,13 +8,7 @@
         <error error_class="InternalError"/>
     </errors>
     <methods>
-        <method name="getBlockDetailsByNumber" param="blockSpecifyByNumberParams" returnType="blockDetails">
-            <comment>Returns the details of the specified block.</comment>
-        </method>
-        <method name="getBlockDetailsByNumber" param="blockSpecifyByEnumParams" returnType="blockDetails">
-            <comment>Returns the details of the specified block.</comment>
-        </method>
-        <method name="getBlockDetailsByHash" param="blockSpecifyByHashParams" returnType="blockDetails">
+        <method name="getBlockDetails" param="blockSpecifier" returnType="blockDetails">
             <comment>Returns the details of the specified block.</comment>
         </method>
     </methods>
