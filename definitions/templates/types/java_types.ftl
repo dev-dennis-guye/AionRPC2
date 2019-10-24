@@ -67,6 +67,7 @@ public class RPCTypes{
         <#list unionType.unionElements as unionElement >
         public ${macros.toJavaType(unionType)}(${macros.toJavaType(unionElement.type)} ${unionElement.name}){
             this(<#list 0..unionType.unionElements?size-1 as i><#if i==unionElement_index>${unionElement.name}<#else>null</#if><#if i_has_next>,</#if ></#list>);
+            if(${unionElement.name} == null) throw ${macros.toJavaException(decodeError.error_class)}.INSTANCE;
         }
         </#list>
 

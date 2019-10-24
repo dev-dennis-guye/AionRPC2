@@ -87,7 +87,7 @@ public class RPCTypesConverter{
         public static String encodeHex(Byte s) {
             try {
                 if (s==null) return null;
-                else return ByteUtil.oneByteToHexString(s);
+                else return "0x"+ByteUtil.oneByteToHexString(s);
             } catch (Exception e) {
                 throw ${macros.toJavaException(encodeError.error_class)}.INSTANCE;
             }
@@ -269,7 +269,7 @@ public class RPCTypesConverter{
         public static ${macros.toJavaType(compositeType)} decode(Object str){
             try{
                 if(str==null) return null;
-                JSONObject jsonObject = new JSONObject(((String) str).replaceAll("\\\\",""));
+                JSONObject jsonObject = str instanceof JSONObject? (JSONObject)str :new JSONObject(str.toString().replaceAll("\\\\",""));
                 return new ${macros.toJavaType(compositeType)}(<#list compositeType.fields as field> ${macros.toJavaConverter(field.type)}.decode(jsonObject.opt("${field.fieldName}")) <#if field_has_next>,</#if></#list>);
             } catch (Exception e){
                 throw ${macros.toJavaException(decodeError.error_class)}.INSTANCE;
@@ -311,7 +311,8 @@ public class RPCTypesConverter{
 
         public static ${macros.toJavaType(constrainedType)} decode(Object object){
             try{
-                if (object!=null && checkConstraints(object.toString())){
+                if(object==null) return null;
+                else if (checkConstraints(object.toString())){
                     return ${macros.toJavaConverter(constrainedType.baseType)}.decode(object);
                 }
                 else{
@@ -335,7 +336,7 @@ public class RPCTypesConverter{
                     throw ${macros.toJavaException(encodeError.error_class)}.INSTANCE;
             }
             else{
-                throw ${macros.toJavaException(encodeError.error_class)}.INSTANCE;
+                return null;
             }
         }
 
@@ -349,7 +350,7 @@ public class RPCTypesConverter{
     public static class ${macros.toJavaConverter(paramType)}{
         public static ${macros.toJavaType(paramType)} decode(Object object){
             if(object==null) return null;
-            String s = object.toString().replaceAll("\\\\","");
+            String s = object.toString();
             try{
                 ${macros.toJavaType(paramType)} obj;
                 if(s.startsWith("[") && s.endsWith("]")){
