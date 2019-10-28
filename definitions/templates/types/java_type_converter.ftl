@@ -269,7 +269,7 @@ public class RPCTypesConverter{
         public static ${macros.toJavaType(compositeType)} decode(Object str){
             try{
                 if(str==null) return null;
-                JSONObject jsonObject = str instanceof JSONObject? (JSONObject)str :new JSONObject(str.toString().replaceAll("\\\\",""));
+                JSONObject jsonObject = str instanceof JSONObject? (JSONObject)str :new JSONObject(str.toString());
                 return new ${macros.toJavaType(compositeType)}(<#list compositeType.fields as field> ${macros.toJavaConverter(field.type)}.decode(jsonObject.opt("${field.fieldName}")) <#if field_has_next>,</#if></#list>);
             } catch (Exception e){
                 throw ${macros.toJavaException(decodeError.error_class)}.INSTANCE;
@@ -283,7 +283,7 @@ public class RPCTypesConverter{
                 <#list compositeType.fields as field>
                 jsonObject.put("${field.fieldName}", ${macros.toJavaConverter(field.type)}.encode(obj.${field.fieldName}));
                 </#list>
-                return jsonObject.toString().replaceAll("\\\\","");
+                return jsonObject.toString();
             }
             catch (Exception e){
                 throw ${macros.toJavaException(encodeError.error_class)}.INSTANCE;

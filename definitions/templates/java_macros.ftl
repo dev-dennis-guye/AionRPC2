@@ -22,6 +22,10 @@
         <#return "BlockEnum">
     <#elseif typeName=="blockSpecifierUnion">
         <#return "BlockSpecifierUnion">
+    <#elseif typeName=="resultUnion">
+        <#return "ResultUnion">
+    <#elseif typeName=="paramUnion">
+        <#return "ParamUnion">
     <#elseif typeName == "txDetails">
         <#return "TransactionDetails">
     <#elseif typeName == "address" >
@@ -95,6 +99,10 @@
         <#return "BlockEnum">
     <#elseif typeName=="blockSpecifierUnion">
         <#return "BlockSpecifierUnion">
+    <#elseif typeName=="resultUnion">
+        <#return "ResultUnion">
+    <#elseif typeName=="paramUnion">
+        <#return "ParamUnion">
     <#elseif typeName == "txDetails">
         <#return "TransactionDetails">
     <#elseif typeName == "big_int_hex_string">
@@ -131,5 +139,25 @@
         <#return "Byte32String">
     <#else >
         <#return typeName>
+    </#if>
+</#function>
+
+<#function resultExtractorFromName name>
+    <#if name=="blockDetails">
+        <#return "r->r.blockDetails">
+    <#elseif name=="address">
+        <#return "r->r.address">
+    <#else>
+        <#return name>
+    </#if>
+</#function>
+
+<#function paramsExtractorFromName name>
+    <#if name=="ecRecoverParams">
+        <#return "ecRecoverParams">
+    <#elseif name=="blockSpecifier">
+        <#return "blockSpecifier">
+    <#else>
+        <#return name>
     </#if>
 </#function>

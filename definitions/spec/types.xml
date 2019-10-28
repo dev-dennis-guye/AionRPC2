@@ -12,6 +12,17 @@
             <union-element type="long" name="blockNumber"/>
             <union-element type="blockEnum" name="blockEnum"/>
         </type-union>
+        <type-union typeName="resultUnion">
+            <!--Please use the same string for the name and type-->
+            <comment>Ensures that the result is type safe</comment>
+            <union-element type="blockDetails" name="blockDetails"/>
+            <union-element type="address" name="address"/>
+        </type-union>
+        <type-union typeName="paramUnion">
+            <comment>Ensures that the request is type safe</comment>
+            <union-element type="ecRecoverParams" name="ecRecoverParams"/>
+            <union-element type="blockSpecifier" name="blockSpecifier"/>
+        </type-union>
     </union>
     <composite>
         <!--Composite types are used to define struct like data structures-->
@@ -19,13 +30,13 @@
             <comment>This is the standard request body for a JSON RPC Request</comment>
             <field fieldName="id" required="false" type="int"/>
             <field fieldName="method" required="true" type="string"/>
-            <field fieldName="params" required="true" type="any"/>
+            <field fieldName="params" required="true" type="paramUnion"/>
             <field fieldName="jsonrpc" required="false" type="version_string"/>
         </type-composite>
         <type-composite typeName="response">
             <comment>This is the standard response body for a JSON RPC Request</comment>
             <field fieldName="id" required="false" type="int"/>
-            <field fieldName="result" required="false" type="any"/>
+            <field fieldName="result" required="false" type="resultUnion"/>
             <field fieldName="error" required="false" type="error"/>
             <field fieldName="jsonrpc" required="true" type="version_string"/>
         </type-composite>

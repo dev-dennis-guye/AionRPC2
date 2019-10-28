@@ -21,18 +21,18 @@ import org.aion.util.types.ByteArrayWrapper;
 *****************************************************************************/
 public interface ${class_name}RPC extends RPC{
 
-    default Object execute(Request request){
-        Object res;
+    default ResultUnion execute(Request request){
+        ResultUnion res;
     <#if errors?has_content>
         try{
     </#if>
             //check that the request can be fulfilled by this class
             <#list methods as method>
             if(request.method.equals("${rpc}_${method.name}")){
-                ${macros.toJavaType(method.param)} params;
-                params=${macros.toJavaConverter(method.param)}.decode(request.params);
+                ${macros.toJavaType(method.param)} params=request.params.${macros.paramsExtractorFromName(method.param.name)};
+                if (params==null) throw ${macros.toJavaException("InvalidParams")}.INSTANCE;
                 ${macros.toJavaType(method.returnType)} result = this.${rpc}_${method.name}(<#list method.param.fields as parameter>params.${parameter.fieldName}<#if parameter_has_next>,</#if></#list>);
-                res = ${macros.toJavaConverter(method.returnType)}.encode(result);
+                res = new ResultUnion(result);
             }else
             </#list>
                 throw ${macros.toJavaException("MethodNotFound")}.INSTANCE;
