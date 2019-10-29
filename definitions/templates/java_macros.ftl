@@ -34,6 +34,8 @@
         <#return "Request">
     <#elseif typeName=="ecRecoverParams">
         <#return "EcRecoverParams">
+    <#elseif typeName=="voidParams">
+        <#return "VoidParams">
     <#elseif typeName=="version_string">
         <#return "VersionType">
     <#elseif typeName=="long">
@@ -117,6 +119,8 @@
         <#return "Request">
     <#elseif typeName=="ecRecoverParams">
         <#return "EcRecoverParams">
+    <#elseif typeName=="voidParams">
+        <#return "VoidParams">
     <#elseif typeName=="version_string">
         <#return "VersionType">
     <#elseif typeName=="long">
@@ -153,11 +157,5 @@
 </#function>
 
 <#function paramsExtractorFromName name>
-    <#if name=="ecRecoverParams">
-        <#return "ecRecoverParams">
-    <#elseif name=="blockSpecifier">
-        <#return "blockSpecifier">
-    <#else>
-        <#return name>
-    </#if>
+    <#return name>
 </#function>

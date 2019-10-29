@@ -22,6 +22,7 @@
             <comment>Ensures that the request is type safe</comment>
             <union-element type="ecRecoverParams" name="ecRecoverParams"/>
             <union-element type="blockSpecifier" name="blockSpecifier"/>
+            <union-element type="voidParams" name="voidParams"/>
         </type-union>
     </union>
     <composite>
@@ -30,7 +31,7 @@
             <comment>This is the standard request body for a JSON RPC Request</comment>
             <field fieldName="id" required="false" type="int"/>
             <field fieldName="method" required="true" type="string"/>
-            <field fieldName="params" required="true" type="paramUnion"/>
+            <field fieldName="params" required="false" type="paramUnion"/>
             <field fieldName="jsonrpc" required="false" type="version_string"/>
         </type-composite>
         <type-composite typeName="response">
@@ -120,7 +121,7 @@
         <!--Constrained types define a maximum and minimum size, and a regex to be used for validating the type-->
         <!--They all rely on a base type-->
         <type-constrained baseType="byte-array" max="infinity"
-            min="4" regex="^0x([0-9a-fA-F][0-9a-fA-F])+" typeName="data_hex_string"/>
+            min="2" regex="^0x([0-9a-fA-F][0-9a-fA-F])*" typeName="data_hex_string"/>
         <type-constrained baseType="bigint" max="infinity" min="3" regex="^0x[0-9a-fA-F]+"
             typeName="big_int_hex_string"/>
         <type-constrained baseType="long" min="3" max="19" regex="^0x[0-9a-fA-F]+"
@@ -149,6 +150,7 @@
         <type-params-wrapper typeName="blockSpecifier">
             <field fieldName="block" index="0" required="true" type="blockSpecifierUnion"/>
         </type-params-wrapper>
+        <type-params-wrapper typeName="voidParams"/>
         <!-- return type specific to each method-->
     </param>
     <primitives>

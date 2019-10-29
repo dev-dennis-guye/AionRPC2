@@ -32,7 +32,7 @@ public interface ${class_name}RPC extends RPC{
                 ${macros.toJavaType(method.param)} params=request.params.${macros.paramsExtractorFromName(method.param.name)};
                 if (params==null) throw ${macros.toJavaException("InvalidParams")}.INSTANCE;
                 ${macros.toJavaType(method.returnType)} result = this.${rpc}_${method.name}(<#list method.param.fields as parameter>params.${parameter.fieldName}<#if parameter_has_next>,</#if></#list>);
-                res = new ResultUnion(result);
+                res = result == null ? null : new ResultUnion(result);
             }else
             </#list>
                 throw ${macros.toJavaException("MethodNotFound")}.INSTANCE;

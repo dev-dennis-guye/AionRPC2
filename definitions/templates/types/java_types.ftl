@@ -71,6 +71,13 @@ public class RPCTypes{
         }
         </#list>
 
+        <#list unionType.unionElements as unionElement >
+        public static ${macros.toJavaType(unionType)} wrap(${macros.toJavaType(unionElement.type)} ${unionElement.name}){
+            if(${unionElement.name} == null) throw ${macros.toJavaException(decodeError.error_class)}.INSTANCE;
+            else return new ${macros.toJavaType(unionType)}(${unionElement.name});
+        }
+        </#list>
+
         public Object encode(){
             <#list unionType.unionElements as unionElement>
             if(this.${unionElement.name} != null) return ${macros.toJavaConverter(unionElement.type)}.encode(${unionElement.name});

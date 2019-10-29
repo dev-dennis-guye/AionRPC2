@@ -26,11 +26,12 @@ public class RPCTypesConverter{
     private static final Pattern hexPattern= Pattern.compile("^0x[0-9a-fA-F]+");
     private static final Pattern decPattern = Pattern.compile("^-?[0-9]+");
     private static final Pattern booleanPattern=Pattern.compile("^([Tt]rue|[Ff]alse)");
+    private static final Pattern byteArrayPattern= Pattern.compile("^0x([0-9a-fA-F][0-9a-fA-F])*");
 
     public static class ${macros.toJavaConverterFromName("any")}{
 
         public static String decode(Object s){
-            if(s==null) return null;
+            if(s==null || s.equals(JSONObject.NULL)) return null;
             return s.toString();
         }
 
@@ -42,7 +43,7 @@ public class RPCTypesConverter{
     public static class ${macros.toJavaConverterFromName("string")}{
 
         public static String decode(Object s){
-            if(s==null) return null;
+            if(s==null || s.equals(JSONObject.NULL)) return null;
             return s.toString();
         }
 
@@ -53,7 +54,7 @@ public class RPCTypesConverter{
 
     public static class ${macros.toJavaConverterFromName("bool")}{
         public static Boolean decode(Object s){
-            if ( s!=null && booleanPattern.matcher(s.toString()).find()) return Boolean.parseBoolean(s.toString());
+            if ( s!=null && !s.equals(JSONObject.NULL) && booleanPattern.matcher(s.toString()).find()) return Boolean.parseBoolean(s.toString());
             else throw ParseErrorRPCException.INSTANCE;
         }
 
@@ -64,7 +65,7 @@ public class RPCTypesConverter{
 
     public static class ${macros.toJavaConverterFromName("byte")}{
         public static Byte decode(Object s){
-            if(s==null) return null;
+            if(s==null||s.equals(JSONObject.NULL)) return null;
             if(hexPattern.matcher(s.toString()).find()){
                 return Byte.parseByte(s.toString().substring(2), 16);
             }
@@ -86,7 +87,7 @@ public class RPCTypesConverter{
 
         public static String encodeHex(Byte s) {
             try {
-                if (s==null) return null;
+                if (s==null||s.equals(JSONObject.NULL)) return null;
                 else return "0x"+ByteUtil.oneByteToHexString(s);
             } catch (Exception e) {
                 throw ${macros.toJavaException(encodeError.error_class)}.INSTANCE;
@@ -97,7 +98,7 @@ public class RPCTypesConverter{
     public static class ${macros.toJavaConverterFromName("long")}{
 
         public static Long decode(Object s){
-            if(s==null) return null;
+            if(s==null || s.equals(JSONObject.NULL)) return null;
             if(hexPattern.matcher(s.toString()).find()){
                 return Long.parseLong(s.toString().substring(2), 16);
             }
@@ -119,7 +120,7 @@ public class RPCTypesConverter{
 
         public static String encodeHex(Long s){
             try{
-            if (s==null) return null;
+            if (s==null || s.equals(JSONObject.NULL)) return null;
             else return "0x"+Long.toHexString(s);
             }catch (Exception e){
                 throw ${macros.toJavaException(encodeError.error_class)}.INSTANCE;
@@ -132,7 +133,7 @@ public class RPCTypesConverter{
     public static class ${macros.toJavaConverterFromName("int")}{
 
         public static Integer decode(Object s){
-            if(s==null) return null;
+            if(s==null || s.equals(JSONObject.NULL)) return null;
             if(hexPattern.matcher(s.toString()).find()){
                 return Integer.parseInt(s.toString().substring(2), 16);
             }
@@ -183,7 +184,7 @@ public class RPCTypesConverter{
         }
 
         public static BigInteger decode(Object s){
-            if(s==null) return null;
+            if(s==null || s.equals(JSONObject.NULL)) return null;
 
             if(hexPattern.matcher(s.toString()).find()){
                 return new BigInteger(s.toString().substring(2), 16);
@@ -200,13 +201,13 @@ public class RPCTypesConverter{
     public static class ${macros.toJavaConverterFromName("byte-array")}{
 
         public static ByteArray decode(Object obj){
-            if (obj == null){
+            if (obj == null || obj.equals(JSONObject.NULL)){
                 return null;
             }
             else if(obj instanceof byte[]){
                 return new ByteArray((byte[]) obj);
             }
-            else if (obj instanceof String && hexPattern.matcher(((String)obj)).find()){
+            else if (obj instanceof String && byteArrayPattern.matcher(((String)obj)).find()){
                 return new ByteArray(ByteUtil.hexStringToBytes((String) obj));
             }
             else {
@@ -248,7 +249,7 @@ public class RPCTypesConverter{
 <#list unionTypes as unionType>
     public static class ${macros.toJavaConverter(unionType)}{
         public static ${macros.toJavaType(unionType)} decode(Object str){
-            if(str==null) return null;
+            if(str==null || str.equals(JSONObject.NULL)) return null;
             else return ${macros.toJavaType(unionType)}.decode(str);
         }
 
@@ -268,7 +269,7 @@ public class RPCTypesConverter{
     public static class ${macros.toJavaConverter(compositeType)}{
         public static ${macros.toJavaType(compositeType)} decode(Object str){
             try{
-                if(str==null) return null;
+                if(str==null || str.equals(JSONObject.NULL)) return null;
                 JSONObject jsonObject = str instanceof JSONObject? (JSONObject)str :new JSONObject(str.toString());
                 return new ${macros.toJavaType(compositeType)}(<#list compositeType.fields as field> ${macros.toJavaConverter(field.type)}.decode(jsonObject.opt("${field.fieldName}")) <#if field_has_next>,</#if></#list>);
             } catch (Exception e){
@@ -281,7 +282,7 @@ public class RPCTypesConverter{
                 if(obj==null) return null;
                 JSONObject jsonObject = new JSONObject();
                 <#list compositeType.fields as field>
-                jsonObject.put("${field.fieldName}", ${macros.toJavaConverter(field.type)}.encode(obj.${field.fieldName}));
+                jsonObject.put("${field.fieldName}", obj.${field.fieldName}==null? JSONObject.NULL:${macros.toJavaConverter(field.type)}.encode(obj.${field.fieldName}));
                 </#list>
                 return jsonObject.toString();
             }
@@ -311,7 +312,7 @@ public class RPCTypesConverter{
 
         public static ${macros.toJavaType(constrainedType)} decode(Object object){
             try{
-                if(object==null) return null;
+                if(object==null || object.equals(JSONObject.NULL)) return null;
                 else if (checkConstraints(object.toString())){
                     return ${macros.toJavaConverter(constrainedType.baseType)}.decode(object);
                 }
@@ -349,9 +350,9 @@ public class RPCTypesConverter{
 <#list paramTypes as paramType>
     public static class ${macros.toJavaConverter(paramType)}{
         public static ${macros.toJavaType(paramType)} decode(Object object){
-            if(object==null) return null;
+            if(object==null || object.equals(JSONObject.NULL)) <#if paramType.fields?has_content>return null;<#else>return new ${macros.toJavaType(paramType)}();</#if>
             String s = object.toString();
-            try{
+            try{<#if paramType.fields?has_content>
                 ${macros.toJavaType(paramType)} obj;
                 if(s.startsWith("[") && s.endsWith("]")){
                     JSONArray jsonArray = new JSONArray(s);
@@ -364,7 +365,13 @@ public class RPCTypesConverter{
                 else{
                     throw ${macros.toJavaException(decodeError.error_class)}.INSTANCE;
                 }
-                return obj;
+                return obj;<#else >
+                if(s.equals("[]") || s.equals("{}")) {//TODO This may not be the best way to handle an empty param list
+                    return new ${macros.toJavaType(paramType)}();
+                }
+                else{
+                    throw ${macros.toJavaException(decodeError.error_class)}.INSTANCE;
+                }</#if>
             }
             catch(Exception e){
                 throw ${macros.toJavaException("InvalidParams")}.INSTANCE;
@@ -373,10 +380,15 @@ public class RPCTypesConverter{
 
         public static Object encode(${macros.toJavaType(paramType)} obj){
             try{
+               <#if paramType.fields?has_content>
                 JSONArray arr = new JSONArray();
                 <#list paramType.fields as param>
-                arr.put(${param.index}, ${macros.toJavaConverter(param.type)}.encode(obj.${param.fieldName}));
-                </#list>return arr;
+                arr.put(${param.index}, obj.${param.fieldName}==null? JSONObject.NULL : ${macros.toJavaConverter(param.type)}.encode(obj.${param.fieldName}));
+                </#list>
+                return arr;
+                <#else >
+                return null;
+                </#if>
             }catch(Exception e){
                 throw ${macros.toJavaException(decodeError.error_class)}.INSTANCE;
             }
@@ -387,7 +399,7 @@ public class RPCTypesConverter{
 <#list enumTypes as enum>
     public static class ${macros.toJavaConverter(enum)}{
         public static ${macros.toJavaType(enum)} decode(Object object){
-            if(object==null) return null;
+            if(object==null || object.equals(JSONObject.NULL)) return null;
             return ${macros.toJavaType(enum)}.fromString(object.toString());
         }
 
@@ -401,7 +413,7 @@ public class RPCTypesConverter{
 <#list arrayTypes as arrayType>
     public static class ${macros.toJavaConverter(arrayType)}{
         public static ${macros.toJavaType(arrayType)} decode(Object object){
-            if(object == null) return null;
+            if(object == null || object.equals(JSONObject.NULL)) return null;
             JSONArray arr = new JSONArray(object.toString());
             ${macros.toJavaType(arrayType)} temp = new ArrayList<>();
             for(int i=0; i < arr.length(); i++){
