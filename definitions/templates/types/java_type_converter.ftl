@@ -26,7 +26,7 @@ public class RPCTypesConverter{
     private static final Pattern hexPattern= Pattern.compile("^0x[0-9a-fA-F]+");
     private static final Pattern decPattern = Pattern.compile("^-?[0-9]+");
     private static final Pattern booleanPattern=Pattern.compile("^([Tt]rue|[Ff]alse)");
-    private static final Pattern byteArrayPattern= Pattern.compile("^0x([0-9a-fA-F][0-9a-fA-F])*");
+    private static final Pattern byteArrayPattern= Pattern.compile("^0x[0-9a-fA-F]*");
 
     public static class ${macros.toJavaConverterFromName("any")}{
 
@@ -249,7 +249,7 @@ public class RPCTypesConverter{
 <#list unionTypes as unionType>
     public static class ${macros.toJavaConverter(unionType)}{
         public static ${macros.toJavaType(unionType)} decode(Object str){
-            <#if unionType.nullable=="true"> if(str==null|| str==JSON.NULL) return null;</#if>
+            <#if unionType.nullable=="true"> if(str==null|| str==JSONObject.NULL) return null;</#if>
             return ${macros.toJavaType(unionType)}.decode(str);
         }
 

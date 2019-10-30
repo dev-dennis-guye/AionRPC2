@@ -26,6 +26,11 @@ public class RPCTypes{
             this.bytes = bytes;
         }
 
+        public ByteArray(String hexString){
+            if (hexString == null) throw new NullPointerException("Hex String is null");
+            this.bytes = ByteUtil.hexStringToBytes(hexString);
+        }
+
         public byte[] toBytes(){
             return Arrays.copyOf(bytes, bytes.length);
         }
@@ -41,8 +46,16 @@ public class RPCTypes{
             else return Arrays.equals(this.bytes, ((ByteArray)that).bytes);
         }
 
+        public int hashCode(){
+            return Arrays.hashCode(this.bytes);
+        }
+
         public static ByteArray wrap(byte[] bytes){
             return new ByteArray(bytes);
+        }
+
+        public static ByteArray wrap(String hexString){
+            return new ByteArray(hexString);
         }
     }
 

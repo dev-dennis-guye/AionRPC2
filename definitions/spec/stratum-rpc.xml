@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<rpc name="stratum">
+    <errors>
+        <error error_class="InvalidRequest"/>
+        <error error_class="ParseError"/>
+        <error error_class="MethodNotFound"/>
+        <error error_class="InvalidParams"/>
+        <error error_class="InternalError"/>
+    </errors>
+    <methods>
+        <method name="getSeed" returnType="data_hex_string" param="voidParams"/>
+        <method name="submitSeed" returnType="data_hex_string" param="submitSeedParams"/>
+        <method name="submitSignature" returnType="bool" param="submitSignatureParams"/>
+    </methods>
+    <comments>
+        <comment>Utilities to be used by block validators</comment>
+    </comments>
+</rpc>

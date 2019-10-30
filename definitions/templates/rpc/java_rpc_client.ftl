@@ -18,26 +18,28 @@ import org.aion.util.types.ByteArrayWrapper;
 public class ${class_name}{
 
     private final Provider provider;
+    private final IDGeneratorStrategy generator;
 
-    public ${class_name}(final Provider provider){
+    public ${class_name}(final Provider provider, IDGeneratorStrategy generator){
         this.provider = provider;
+        this.generator = generator;
     }
 <#list methods as method>
 
     public final ${macros.toJavaType(method.returnType)} ${method.name}(<#list method.param.fields as parameter>${macros.toJavaType(parameter.type)} ${parameter.fieldName}<#if parameter_has_next>,</#if></#list>){
         ${macros.toJavaType(method.param)} params= new ${macros.toJavaType(method.param)}(<#list method.param.fields as parameter>${parameter.fieldName}<#if parameter_has_next> ,</#if></#list>);
-        Request request = new Request(0, "${rpc}_${method.name}", new ParamUnion(params), VersionType.Version2);
+        Request request = new Request(generator.generateID(), "${rpc}_${method.name}", new ParamUnion(params), VersionType.Version2);
 
-        return provider.execute(request, ${macros.resultExtractorFromName(method.returnType.name)});
+        return provider.execute(request, ${macros.resultExtractorFromName(method.returnType)});
     }
 </#list>
 <#list methods as method>
 
     public final <O> CompletableFuture<O> ${method.name}(<#list method.param.fields as parameter>${macros.toJavaType(parameter.type)} ${parameter.fieldName},</#list> BiFunction<${macros.toJavaType(method.returnType)}, RPCError, O> asyncTask){
         ${macros.toJavaType(method.param)} params= new ${macros.toJavaType(method.param)}(<#list method.param.fields as parameter>${parameter.fieldName}<#if parameter_has_next> ,</#if></#list>);
-        Request request = new Request(0, "${rpc}_${method.name}", new ParamUnion(params), VersionType.Version2);
+        Request request = new Request(generator.generateID(), "${rpc}_${method.name}", new ParamUnion(params), VersionType.Version2);
 
-        return provider.executeAsync(request, ${macros.resultExtractorFromName(method.returnType.name)}, asyncTask);
+        return provider.executeAsync(request, ${macros.resultExtractorFromName(method.returnType)}, asyncTask);
     }
 </#list>
 }

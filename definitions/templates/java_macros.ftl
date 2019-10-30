@@ -50,6 +50,10 @@
         <#return "Object">
     <#elseif typeName=="txLogDetails">
         <#return "TxLogDetails">
+    <#elseif typeName=="submitSignatureParams">
+        <#return "SubmitSignatureParams">
+    <#elseif typeName=="submitSeedParams">
+        <#return "SubmitSeedParams">
     <#else >
         <#return typeName>
     </#if>
@@ -60,6 +64,8 @@
         <#return "Personal"/>
     <#elseif className=="ops">
         <#return "Ops">
+    <#elseif className=="stratum">
+        <#return "Stratum">
     </#if>
 </#function>
 
@@ -141,16 +147,28 @@
         <#return "ByteHexString">
     <#elseif typeName=="byte_32_string">
         <#return "Byte32String">
+    <#elseif typeName=="byte_64_string">
+        <#return "Byte64String">
+    <#elseif typeName=="submitSignatureParams">
+        <#return "SubmitSignatureParams">
+    <#elseif typeName=="submitSeedParams">
+        <#return "SubmitSeedParams">
     <#else >
         <#return typeName>
     </#if>
 </#function>
 
-<#function resultExtractorFromName name>
+<#function resultExtractorFromName type>
+    <#if type.baseType?has_content><#return resultExtractorFromName(type.baseType)></#if>
+    <#local name = type.name>
     <#if name=="blockDetails">
         <#return "r->r.blockDetails">
     <#elseif name=="address">
         <#return "r->r.address">
+    <#elseif name=="byte-array">
+        <#return "r->r.byteArray">
+    <#elseif name=="bool">
+        <#return "r->r.bool">
     <#else>
         <#return name>
     </#if>

@@ -17,12 +17,16 @@
             <comment>Ensures that the result is type safe</comment>
             <union-element type="blockDetails" name="blockDetails"/>
             <union-element type="address" name="address"/>
+            <union-element type="byte-array" name="byteArray"/>
+            <union-element type="bool" name="bool"/>
         </type-union>
         <type-union typeName="paramUnion" nullable="false">
             <comment>Ensures that the request is type safe</comment>
             <union-element type="ecRecoverParams" name="ecRecoverParams"/>
             <union-element type="blockSpecifier" name="blockSpecifier"/>
             <union-element type="voidParams" name="voidParams"/>
+            <union-element type="submitSeedParams" name="submitSeedParams"/>
+            <union-element type="submitSignatureParams" name="submitSignatureParams"/>
         </type-union>
     </union>
     <composite>
@@ -75,11 +79,12 @@
             <field fieldName="gasUsed" required="true" type="long_hex_string"/>
             <field fieldName="hasInternalTransactions" required="true" type="bool"/>
             <field fieldName="logs" required="true" type="txLogDetails_array"/>
+            <field fieldName="beaconHash" required="false" type="byte_32_string"/>
         </type-composite>
         <type-composite typeName="blockDetails">
             <field fieldName="number" required="true" type="long"/>
-            <field fieldName="hash" required="true" type="data_hex_string"/>
-            <field fieldName="parentHash" required="true" type="data_hex_string"/>
+            <field fieldName="hash" required="true" type="byte_32_string"/>
+            <field fieldName="parentHash" required="true" type="byte_32_string"/>
             <field fieldName="logsBloom" required="true" type="byte-array"/>
             <field fieldName="transactionsRoot" required="true" type="data_hex_string"/>
             <field fieldName="statesRoot" required="true" type="data_hex_string"/>
@@ -121,16 +126,17 @@
         <!--Constrained types define a maximum and minimum size, and a regex to be used for validating the type-->
         <!--They all rely on a base type-->
         <type-constrained baseType="byte-array" max="infinity"
-            min="2" regex="^0x([0-9a-fA-F][0-9a-fA-F])*" typeName="data_hex_string"/>
-        <type-constrained baseType="bigint" max="infinity" min="3" regex="^0x[0-9a-fA-F]+"
+            min="2" regex="^0x([0-9a-fA-F][0-9a-fA-F])*$" typeName="data_hex_string"/>
+        <type-constrained baseType="bigint" max="infinity" min="3" regex="^0x[0-9a-fA-F]+$"
             typeName="big_int_hex_string"/>
-        <type-constrained baseType="long" min="3" max="19" regex="^0x[0-9a-fA-F]+"
+        <type-constrained baseType="long" min="3" max="19" regex="^0x[0-9a-fA-F]+$"
             typeName="long_hex_string"/>
-        <type-constrained baseType="int" min="3" max="11" regex="^0x[0-9a-fA-F]+"
+        <type-constrained baseType="int" min="3" max="11" regex="^0x[0-9a-fA-F]+$"
             typeName="int_hex_string"/>
-        <type-constrained baseType="byte" min="3" max="4" regex="^0x[0-9a-fA-F]+"
+        <type-constrained baseType="byte" min="3" max="4" regex="^0x[0-9a-fA-F]+$"
             typeName="byte_hex_string"/>
         <type-constrained baseType="data_hex_string" typeName="byte_32_string" max="66" min="66" regex=".*"/>
+        <type-constrained baseType="data_hex_string" typeName="byte_64_string" max="130" min="130" regex=".*"/>
     </constrained>
     <enum>
         <!--Enum types are used in the case of a string or value with a restricted set of values-->
@@ -149,6 +155,15 @@
         </type-params-wrapper>
         <type-params-wrapper typeName="blockSpecifier">
             <field fieldName="block" index="0" required="true" type="blockSpecifierUnion"/>
+        </type-params-wrapper>
+        <type-params-wrapper typeName="submitSeedParams">
+            <field fieldName="newSeed" index="0" required="true" type="byte_64_string"/>
+            <field fieldName="signingPublicKey" index="1" required="true" type="byte_32_string"/>
+            <field fieldName="coinbase" index="2" required="true" type="address"/>
+        </type-params-wrapper>
+        <type-params-wrapper typeName="submitSignatureParams">
+            <field fieldName="signature" index="0" required="true" type="byte_64_string"/>
+            <field fieldName="sealHash" index="1" required="true" type="byte_32_string"/>
         </type-params-wrapper>
         <type-params-wrapper typeName="voidParams"/>
         <!-- return type specific to each method-->
