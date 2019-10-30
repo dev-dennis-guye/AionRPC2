@@ -249,8 +249,8 @@ public class RPCTypesConverter{
 <#list unionTypes as unionType>
     public static class ${macros.toJavaConverter(unionType)}{
         public static ${macros.toJavaType(unionType)} decode(Object str){
-            if(str==null || str.equals(JSONObject.NULL)) return null;
-            else return ${macros.toJavaType(unionType)}.decode(str);
+            <#if unionType.nullable=="true"> if(str==null|| str==JSON.NULL) return null;</#if>
+            return ${macros.toJavaType(unionType)}.decode(str);
         }
 
         public static Object encode(${macros.toJavaType(unionType)} obj){

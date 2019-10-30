@@ -6,19 +6,19 @@
         <!--Unions are to be used anywhere multiple types are valid but only one should be used.-->
         <!--They are included in the RPC spec to ensure that all types are checked on compile time
         and so we avoid using language specific features like overloading or universal types. -->
-        <type-union typeName="blockSpecifierUnion">
+        <type-union typeName="blockSpecifierUnion" nullable="true">
             <comment>Specifies a block</comment>
             <union-element type="byte-array" name="hash"/>
             <union-element type="long" name="blockNumber"/>
             <union-element type="blockEnum" name="blockEnum"/>
         </type-union>
-        <type-union typeName="resultUnion">
+        <type-union typeName="resultUnion" nullable="true">
             <!--Please use the same string for the name and type-->
             <comment>Ensures that the result is type safe</comment>
             <union-element type="blockDetails" name="blockDetails"/>
             <union-element type="address" name="address"/>
         </type-union>
-        <type-union typeName="paramUnion">
+        <type-union typeName="paramUnion" nullable="false">
             <comment>Ensures that the request is type safe</comment>
             <union-element type="ecRecoverParams" name="ecRecoverParams"/>
             <union-element type="blockSpecifier" name="blockSpecifier"/>

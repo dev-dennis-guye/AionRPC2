@@ -12,11 +12,12 @@ import org.w3c.dom.Element;
 public class UnionType extends Type {
 
     private final List<UnionElement> unionElements;
-
+    private final String nullable;
     UnionType(String name, List<String> comments,
-        List<UnionElement> elements) {
+        List<UnionElement> elements, String nullable) {
         super(name, comments);
         this.unionElements = elements;
+        this.nullable = nullable;
     }
 
     UnionType(Element element) {
@@ -24,12 +25,16 @@ public class UnionType extends Type {
         unionElements = XMLUtils.elements(element.getChildNodes()).stream()
             .filter(e -> e.getNodeName().equals("union-element")).map(UnionElement::new).collect(
                 Collectors.toUnmodifiableList());
+        if (XMLUtils.hasAttribute(element, "nullable"))
+        this.nullable = XMLUtils.valueFromAttribute(element, "nullable");
+        else nullable="true";
     }
 
     @Override
     protected Map<String, Object> toMutableMap() {
         Map<String,Object> mutableMap= super.toMutableMap();
         mutableMap.put("unionElements", unionElements.stream().map(UnionElement::toMap).collect(Collectors.toUnmodifiableList()));
+        mutableMap.put("nullable", nullable);
         return Collections.unmodifiableMap(mutableMap);
     }
 

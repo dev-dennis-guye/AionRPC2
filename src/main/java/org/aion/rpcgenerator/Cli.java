@@ -317,7 +317,7 @@ public class Cli implements Runnable {
         //Check that the required files exist
         boolean containsXMLSpecFiles = Arrays.stream(file.list()).filter(path -> path
             .endsWith(".xml")).allMatch(f-> files.contains(f) || regex.matcher(f).find());
-        if (containsXMLSpecFiles) {
+        if (!containsXMLSpecFiles) {
             logger.warn("Could not find any template files in the path.");
             throw new IllegalStateException("The spec directory is not a folder");
         }
