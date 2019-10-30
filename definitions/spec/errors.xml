@@ -11,4 +11,7 @@
     <error error_class="InternalError" code="-32603" message="Internal error">
         <comment>Occurs if the server failed to complete the request</comment>
     </error>
+    <error error_class="UnsupportedUnityFeature" code="-32001" message="Unity fork is not enabled">
+        <comment>Occurs if a unity specific service is requested</comment>
+    </error>
 </errors>
