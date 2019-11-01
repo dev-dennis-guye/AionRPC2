@@ -2,11 +2,7 @@
 <#global class_name = macros.toJavaClassName(rpc)/>
 package org.aion.rpc.server;
 
-import static org.aion.rpc.errors.RPCExceptions.InternalErrorRPCException;
-import static org.aion.rpc.errors.RPCExceptions.InvalidParamsRPCException;
-import static org.aion.rpc.errors.RPCExceptions.InvalidRequestRPCException;
-import static org.aion.rpc.errors.RPCExceptions.MethodNotFoundRPCException;
-import static org.aion.rpc.errors.RPCExceptions.ParseErrorRPCException;
+import static org.aion.rpc.errors.RPCExceptions.*;
 
 import java.util.Set;
 import org.aion.rpc.types.RPCTypes.*;
@@ -38,7 +34,7 @@ public interface ${class_name}RPC extends RPC{
                 throw ${macros.toJavaException("MethodNotFound")}.INSTANCE;
     <#if errors?has_content>
         }
-        catch(<#list errors as error >${macros.toJavaException(error.error_class)}<#if error_has_next> |</#if></#list> e){
+        catch(RPCException e){
             throw e;
         }
         catch(Exception e){
