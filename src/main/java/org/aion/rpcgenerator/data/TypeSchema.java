@@ -11,6 +11,7 @@ import org.aion.rpcgenerator.util.SchemaUtils;
 import org.aion.rpcgenerator.util.XMLUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 public class TypeSchema implements Mappable {
 
@@ -25,6 +26,7 @@ public class TypeSchema implements Mappable {
     private List<Type> unionType;
     private ErrorSchema decodeError;
     private ErrorSchema encodeError;
+    private List<Pattern> patterns;
 
     public TypeSchema(Document document) {
         Element root = document.getDocumentElement();
@@ -37,9 +39,15 @@ public class TypeSchema implements Mappable {
         unionType = readTypes(root, "union","type-union");
         decodeErrorName = readErrorName(root, "decode-error");
         encodeErrorName = readErrorName(root, "encode-error");
+        patterns = readPatterns(root);
         SchemaUtils.initializeTypes(toList());
     }
 
+    private List<Pattern> readPatterns(final Element root){
+        Element regexRoot = (Element) root.getElementsByTagName("regexes").item(0);
+        return XMLUtils.elements(regexRoot.getChildNodes()).stream().map(Pattern::new).collect(
+            Collectors.toUnmodifiableList());
+    }
     private List<Type> readTypes(final Element root, final String tagName, final String typeName) {
         return XMLUtils.elements(root.getElementsByTagName(tagName)).stream()
             .flatMap(element -> XMLUtils.elements(element.getElementsByTagName(typeName)).stream())
@@ -93,7 +101,8 @@ public class TypeSchema implements Mappable {
             Map.entry("unionTypes",
                 unionType.stream().map(Type::toMap).collect(Collectors.toUnmodifiableList())),
             Map.entry("encodeError", encodeError.toMap()),
-            Map.entry("decodeError", decodeError.toMap())
+            Map.entry("decodeError", decodeError.toMap()),
+            Map.entry("patterns", patterns.stream().map(Mappable::toMap).collect(Collectors.toUnmodifiableList()))
         );
     }
 

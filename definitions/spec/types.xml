@@ -2,6 +2,12 @@
 <types>
     <encode-error error_class="ParseError"/>
     <decode-error error_class="ParseError"/>
+    <regexes>
+        <regex name="hexPattern" value="^0x[0-9a-fA-F]+$"/>
+        <regex name="decPattern" value="^-?[0-9]+$"/>
+        <regex name="booleanPattern" value="^([Tt]rue|[Ff]alse)$"/>
+        <regex name="byteArrayPattern" value="^0x[0-9a-fA-F]*$"/>
+    </regexes>
     <union>
         <!--Unions are to be used anywhere multiple types are valid but only one should be used.-->
         <!--They are included in the RPC spec to ensure that all types are checked on compile time

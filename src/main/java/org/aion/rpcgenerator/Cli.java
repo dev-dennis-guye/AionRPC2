@@ -310,6 +310,9 @@ public class Cli implements Runnable {
         if (!file.isDirectory()) {
             logger.warn("The spec directory is not a folder.");
             throw new IllegalStateException("The spec directory is not a folder");
+        } else if (file.list().length ==0) {
+            logger.warn("The spec directory is empty.");
+            throw new IllegalStateException("The spec directory is empty");
         }
         //noinspection ConstantConditions
         List<String> files = List.of("errors.xml", "types.xml");
