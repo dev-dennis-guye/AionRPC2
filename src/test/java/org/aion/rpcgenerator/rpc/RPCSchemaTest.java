@@ -264,7 +264,7 @@ public class RPCSchemaTest {
         List<ErrorSchema> errors = assertDoesNotThrow(() -> ErrorSchema.fromDocument(doc));
         TypeSchema typeSchema = new TypeSchema(XMLUtils.fromString(typeXml));
         typeSchema.setErrors(errors);
-        RPCSchema schema = new RPCSchema(XMLUtils.fromString(xml), errors, typeSchema);
+        RPCSchema schema = new RPCSchema(XMLUtils.fromString(xml), typeSchema);
 
         PrimitiveType intType = new PrimitiveType("int", Collections.emptyList());
         PrimitiveType stringType = new PrimitiveType("string", Collections.emptyList());

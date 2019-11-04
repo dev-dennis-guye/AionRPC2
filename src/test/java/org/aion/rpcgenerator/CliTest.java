@@ -90,7 +90,7 @@ public class CliTest {
         errors = ErrorSchema.fromDocument(XMLUtils.fromFile(errorsXML));
         typeSchema = new TypeSchema(XMLUtils.fromFile(typeXML));
         typeSchema.setErrors(errors);
-        rpcSchema = new RPCSchema(XMLUtils.fromFile(rpcXML), errors, typeSchema);
+        rpcSchema = new RPCSchema(XMLUtils.fromFile(rpcXML), typeSchema);
         System.out.println(new String(byteArrayOutputStream.toByteArray()));
         byteArrayOutputStream.reset();
         printWriter = new PrintWriter(byteArrayOutputStream);

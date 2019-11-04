@@ -19,8 +19,6 @@ import org.w3c.dom.NodeList;
 
 public class RPCSchema implements Mappable {
 
-    private final String rpc;
-    private List<ErrorSchema> errors = new ArrayList<>();
     private List<Type> types = new ArrayList<>();
     private List<MethodSchema> methods = new ArrayList<>();
     private List<String> comments = new ArrayList<>();
@@ -28,20 +26,14 @@ public class RPCSchema implements Mappable {
     /**
      * Parse the xml document and create the schema for an rpc
      *  @param rpcSchema     the xml document
-     * @param errorsSchemas the list of expected errors
      * @param types
      */
-    public RPCSchema(Document rpcSchema, List<ErrorSchema> errorsSchemas,
-        TypeSchema types) {
+    public RPCSchema(Document rpcSchema, TypeSchema types) {
         Element root = rpcSchema.getDocumentElement();
-        rpc = XMLUtils.valueFromAttribute(root, "name");
         NodeList nodeList = root.getChildNodes();
         for (Element element: XMLUtils.elements(nodeList)) {
             SchemaDef def = SchemaDef.fromNode(element);
             switch (def) {
-                case ERRORS:
-                    errors = getErrors(element.getChildNodes(), errorsSchemas);
-                    break;
                 case METHOD:
                     methods = getMethodSchemas(element.getChildNodes());
                     break;
@@ -102,27 +94,16 @@ public class RPCSchema implements Mappable {
 
     public Map<String, Object> toMap() {
         return Map.ofEntries(
-            Map.entry("rpc", rpc),
             Map.entry("methods",
                 methods.stream().map(MethodSchema::toMap).collect(Collectors.toUnmodifiableList())),
-            Map.entry("errors",
-                errors.stream().map(ErrorSchema::toMap).collect(Collectors.toUnmodifiableList())),
             Map.entry("types",
                 types.stream().map(Type::toMap).collect(Collectors.toUnmodifiableList())),
             Map.entry("comments", comments)
         );
     }
 
-    /**
-     *
-     * @return the name of this rpc interface
-     */
-    public String getRpc() {
-        return rpc;
-    }
-
     enum SchemaDef {
-        ERRORS("errors"), TYPES("types"), METHOD("methods"), COMMENTS("comments");
+        METHOD("methods"), COMMENTS("comments");
         private static List<SchemaDef> values = Arrays.asList(values());
         private final String xmlNodeName;
 

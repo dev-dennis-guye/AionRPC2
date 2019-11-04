@@ -75,19 +75,17 @@ public class Cli implements Runnable {
             Path specPath = Paths.get(spec);
             if (specPath.toFile().exists() && specPath.toFile().isDirectory()) {
                 logger.debug("Attempting to read spec...");
-                File errors = Paths.get(spec + "/errors.xml").toFile();
+                File errors = Paths.get(Utils.appendToPath(spec,"/errors.xml")).toFile();
                 logger.debug("Reading error template files.");
                 List<ErrorSchema> errorSchemas = ErrorSchema
                     .fromDocument(XMLUtils.fromFile(errors));
-                File types = Paths.get(spec + "/types.xml").toFile();
+                File types = Paths.get(Utils.appendToPath(spec, "/types.xml")).toFile();
                 TypeSchema typeSchema = new TypeSchema(XMLUtils.fromFile(types));
                 typeSchema.setErrors(errorSchemas);
                 logger.debug("Reading rpc template files.");
                 //noinspection ConstantConditions
-                List<File> rpcSpecFiles = Arrays.stream(specPath.toFile().listFiles())
-                    .filter(s -> s.getName().endsWith("-rpc.xml"))
-                    .peek(file -> logger.debug("Found spec file: {}", file.getName()))
-                    .collect(Collectors.toUnmodifiableList());
+                RPCSchema rpcSchema = new RPCSchema(XMLUtils.fromFile(Utils.appendToPath(spec, "rpc.xml")), typeSchema);
+
 
                 File errorsOutputFile = new File(Utils.appendToPath(output, "errors"));
                 File rpcOutputFile = new File(Utils.appendToPath(output, "rpc"));
@@ -98,11 +96,7 @@ public class Cli implements Runnable {
                     if (template.contains("errors")) {
                         processAllErrors(errorsOutputFile, errorSchemas, template, configuration);
                     } else if (template.contains("rpc")) {
-                        for (var rpcSpec : rpcSpecFiles) {
-                            processAllTemplates(rpcOutputFile,
-                                new RPCSchema(XMLUtils.fromFile(rpcSpec), errorSchemas, typeSchema), template,
-                                configuration);
-                        }
+                        processAllTemplates(rpcOutputFile, rpcSchema, template, configuration);
                     } else if (template.endsWith("types")) {
                         processAllTypes(typesOutputFile, typeSchema, template, configuration);
                     } else {
@@ -190,11 +184,9 @@ public class Cli implements Runnable {
                 String outputFileName;
                 if (Utils.isJavaTemplate(templateFile)) {
                     if(templateFile.endsWith("rpc.ftl")) {
-                        outputFileName =
-                            rpcSchema.getRpc().substring(0, 1).toUpperCase() + rpcSchema.getRpc()
-                                .substring(1) + "RPC.java";
+                        outputFileName ="RPCServerMethods.java";
                     } else {
-                        outputFileName=rpcSchema.getRpc().substring(0,1).toUpperCase() + rpcSchema.getRpc().substring(1) +".java";
+                        outputFileName="RPCClientMethods.java";
                     }
                 } else {
                     logger.warn("Encountered an unexpected file: {}", templateFile);
@@ -316,7 +308,7 @@ public class Cli implements Runnable {
         }
         //noinspection ConstantConditions
         List<String> files = List.of("errors.xml", "types.xml");
-        Pattern regex = Pattern.compile("-rpc");
+        Pattern regex = Pattern.compile("rpc");
         //Check that the required files exist
         boolean containsXMLSpecFiles = Arrays.stream(file.list()).filter(path -> path
             .endsWith(".xml")).allMatch(f-> files.contains(f) || regex.matcher(f).find());
