@@ -1,5 +1,4 @@
 <#import "../java_macros.ftl" as macros/>
-<#global class_name = macros.toJavaClassName(rpc)/>
 package org.aion.rpc.server;
 
 import static org.aion.rpc.errors.RPCExceptions.*;
@@ -15,7 +14,7 @@ import org.aion.util.types.ByteArrayWrapper;
 * BE WIPED OUT WHEN THIS FILE GETS RE-GENERATED OR UPDATED.
 *
 *****************************************************************************/
-public interface ${class_name}RPC extends RPC{
+public interface RPCServerMethods extends RPC{
 
     default ResultUnion execute(Request request){
         ResultUnion res;
@@ -24,10 +23,10 @@ public interface ${class_name}RPC extends RPC{
     </#if>
             //check that the request can be fulfilled by this class
             <#list methods as method>
-            if(request.method.equals("${rpc}_${method.name}")){
+            if(request.method.equals("${method.name}")){
                 ${macros.toJavaType(method.param)} params=request.params.${macros.paramsExtractorFromName(method.param.name)};
                 if (params==null) throw ${macros.toJavaException("InvalidParams")}.INSTANCE;
-                ${macros.toJavaType(method.returnType)} result = this.${rpc}_${method.name}(<#list method.param.fields as parameter>params.${parameter.fieldName}<#if parameter_has_next>,</#if></#list>);
+                ${macros.toJavaType(method.returnType)} result = this.${method.name}(<#list method.param.fields as parameter>params.${parameter.fieldName}<#if parameter_has_next>,</#if></#list>);
                 res = result == null ? null : new ResultUnion(result);
             }else
             </#list>
@@ -45,10 +44,10 @@ public interface ${class_name}RPC extends RPC{
     }
 
     default Set<String> listMethods(){
-        return Set.of(<#list methods as method> "${rpc}_${method.name}"<#if method_has_next>,</#if></#list>);
+        return Set.of(<#list methods as method> "${method.name}"<#if method_has_next>,</#if></#list>);
     }
 
     <#list methods as method>
-    ${macros.toJavaType(method.returnType)} ${rpc}_${method.name}(<#list method.param.fields as parameter>${macros.toJavaType(parameter.type)} ${parameter.fieldName}<#if parameter_has_next>,</#if></#list>);
+    ${macros.toJavaType(method.returnType)} ${method.name}(<#list method.param.fields as parameter>${macros.toJavaType(parameter.type)} ${parameter.fieldName}<#if parameter_has_next>,</#if></#list>);
     </#list>
 }

@@ -54,6 +54,10 @@
         <#return "SubmitSignatureParams">
     <#elseif typeName=="submitSeedParams">
         <#return "SubmitSeedParams">
+    <#elseif typeName=="addressParams">
+        <#return "AddressParams">
+    <#elseif typeName=="validateAddressResults">
+        <#return "ValidateAddressResults">
     <#else >
         <#return typeName>
     </#if>
@@ -153,6 +157,10 @@
         <#return "SubmitSignatureParams">
     <#elseif typeName=="submitSeedParams">
         <#return "SubmitSeedParams">
+    <#elseif typeName=="addressParams">
+        <#return "AddressParams">
+    <#elseif typeName=="validateAddressResults">
+        <#return "ValidateAddressResults">
     <#else >
         <#return typeName>
     </#if>
@@ -161,16 +169,10 @@
 <#function resultExtractorFromName type>
     <#if type.baseType?has_content><#return resultExtractorFromName(type.baseType)></#if>
     <#local name = type.name>
-    <#if name=="blockDetails">
-        <#return "r->r.blockDetails">
-    <#elseif name=="address">
-        <#return "r->r.address">
-    <#elseif name=="byte-array">
+    <#if name=="byte-array">
         <#return "r->r.byteArray">
-    <#elseif name=="bool">
-        <#return "r->r.bool">
     <#else>
-        <#return name>
+        <#return "r->r.${name}">
     </#if>
 </#function>
 

@@ -1,5 +1,4 @@
 <#import "../java_macros.ftl" as macros/>
-<#global class_name = macros.toJavaClassName(rpc)/>
 package org.aion.rpc.client;
 
 import java.util.concurrent.CompletableFuture;
@@ -15,12 +14,12 @@ import org.aion.util.types.ByteArrayWrapper;
 * BE WIPED OUT WHEN THIS FILE GETS RE-GENERATED OR UPDATED.
 *
 *****************************************************************************/
-public class ${class_name}{
+public class RPCClientMethods{
 
     private final Provider provider;
     private final IDGeneratorStrategy generator;
 
-    public ${class_name}(final Provider provider, IDGeneratorStrategy generator){
+    public RPCClientMethods(final Provider provider, IDGeneratorStrategy generator){
         this.provider = provider;
         this.generator = generator;
     }
@@ -28,7 +27,7 @@ public class ${class_name}{
 
     public final ${macros.toJavaType(method.returnType)} ${method.name}(<#list method.param.fields as parameter>${macros.toJavaType(parameter.type)} ${parameter.fieldName}<#if parameter_has_next>,</#if></#list>){
         ${macros.toJavaType(method.param)} params= new ${macros.toJavaType(method.param)}(<#list method.param.fields as parameter>${parameter.fieldName}<#if parameter_has_next> ,</#if></#list>);
-        Request request = new Request(generator.generateID(), "${rpc}_${method.name}", new ParamUnion(params), VersionType.Version2);
+        Request request = new Request(generator.generateID(), "${method.name}", new ParamUnion(params), VersionType.Version2);
 
         return provider.execute(request, ${macros.resultExtractorFromName(method.returnType)});
     }
@@ -37,7 +36,7 @@ public class ${class_name}{
 
     public final <O> CompletableFuture<O> ${method.name}(<#list method.param.fields as parameter>${macros.toJavaType(parameter.type)} ${parameter.fieldName},</#list> BiFunction<${macros.toJavaType(method.returnType)}, RPCError, O> asyncTask){
         ${macros.toJavaType(method.param)} params= new ${macros.toJavaType(method.param)}(<#list method.param.fields as parameter>${parameter.fieldName}<#if parameter_has_next> ,</#if></#list>);
-        Request request = new Request(generator.generateID(), "${rpc}_${method.name}", new ParamUnion(params), VersionType.Version2);
+        Request request = new Request(generator.generateID(), "${method.name}", new ParamUnion(params), VersionType.Version2);
 
         return provider.executeAsync(request, ${macros.resultExtractorFromName(method.returnType)}, asyncTask);
     }
