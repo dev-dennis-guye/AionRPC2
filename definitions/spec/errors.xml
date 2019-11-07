@@ -14,4 +14,7 @@
     <error error_class="UnsupportedUnityFeature" code="-32001" message="Unity fork is not enabled">
         <comment>Occurs if a unity specific service is requested</comment>
     </error>
+    <error error_class="BlockTemplateNotFound" code="-32002" message="Could not find the block template for the supplied header hash."/>
+    <error error_class="FailedToSealBlock" code="-32003" message="Could not seal the pow block."/>
+    <error error_class="FailedToComputeMetrics" code="-32004" message="Could not compute the POW metrics."/>
 </errors>

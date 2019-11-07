@@ -25,14 +25,22 @@
             <union-element type="address" name="address"/>
             <union-element type="byte-array" name="byteArray"/>
             <union-element type="bool" name="bool"/>
+            <union-element type="blockTemplate" name="blockTemplate"/>
+            <union-element type="submissionResult" name="submissionResult"/>
+            <union-element type="validateAddressResult" name="validateAddressResult"/>
+            <union-element type="big_int_hex_string" name="bigInt"/>
+            <union-element type="minerStats" name="minerStats"/>
         </type-union>
         <type-union typeName="paramUnion" nullable="false">
+            <!--Some of these types overlap eg address and blockSpecifier-->
             <comment>Ensures that the request is type safe</comment>
-            <union-element type="ecRecoverParams" name="ecRecoverParams"/>
-            <union-element type="blockSpecifier" name="blockSpecifier"/>
             <union-element type="voidParams" name="voidParams"/>
+            <union-element type="ecRecoverParams" name="ecRecoverParams"/>
             <union-element type="submitSeedParams" name="submitSeedParams"/>
             <union-element type="submitSignatureParams" name="submitSignatureParams"/>
+            <union-element type="submitBlockParams" name="submitBlockParams"/>
+            <union-element type="addressParams" name="addressParams"/>
+            <union-element type="blockSpecifier" name="blockSpecifier"/>
         </type-union>
     </union>
     <composite>
@@ -118,6 +126,27 @@
             <field fieldName="publicKey" required="false" type="data_hex_string"/>
             <field fieldName="blockTime" required="false" type="int"/>
         </type-composite>
+        <type-composite typeName="blockTemplate">
+            <field fieldName="previousblockhash" type="byte_32_string" required="true"/>
+            <field fieldName="height" type="long" required="true"/>
+            <field fieldName="target" type="big_int_hex_string" required="true"/>
+            <field fieldName="headerHash" type="byte_32_string" required="true"/>
+            <field fieldName="blockBaseReward" type="big_int_hex_string" required="true"/>
+            <field fieldName="blockTxFee" type="big_int_hex_string" required="true"/>
+        </type-composite>
+        <type-composite typeName="submissionResult">
+            <field fieldName="result" type="bool" required="true"/>
+        </type-composite>
+        <type-composite typeName="validateAddressResult">
+            <field fieldName="isvalid" type="bool" required="true"/>
+            <field fieldName="address" type="address" required="true"/>
+            <field fieldName="ismine" type="bool" required="true"/>
+        </type-composite>
+        <type-composite typeName="minerStats">
+            <field fieldName="networkHashRate" type="decimal_string" required="true"/>
+            <field fieldName="minerHashrate" type="decimal_string" required="true"/>
+            <field fieldName="minerHashrateShare" type="decimal_string" required="true"/>
+        </type-composite>
     </composite>
     <array>
         <!--Array types are self explanatory. They can nest a composite type, constrained type, primitive type or param type.-->
@@ -143,6 +172,10 @@
             typeName="byte_hex_string"/>
         <type-constrained baseType="data_hex_string" typeName="byte_32_string" max="66" min="66" regex=".*"/>
         <type-constrained baseType="data_hex_string" typeName="byte_64_string" max="130" min="130" regex=".*"/>
+        <type-constrained baseType="string" typeName="decimal_string"
+            regex="^([+-]([1-9][0-9]*|[0-9]+[.][0-9])|[0-9]+([.][0-9])?)[0-9]*$" min="1" max="infinity"/>
+        <!--The regex constraint for decimal string was implemented above to minimize differences between languages.
+        The java compiler complains with any string that contains a / that is not used to escape a literal.-->
     </constrained>
     <enum>
         <!--Enum types are used in the case of a string or value with a restricted set of values-->
@@ -172,6 +205,14 @@
             <field fieldName="sealHash" index="1" required="true" type="byte_32_string"/>
         </type-params-wrapper>
         <type-params-wrapper typeName="voidParams"/>
+        <type-params-wrapper typeName="submitBlockParams">
+            <field fieldName="nonce" index="0" required="true" type="data_hex_string"/>
+            <field fieldName="solution" index="1" required="true" type="data_hex_string"/>
+            <field fieldName="headerHash" index="2" required="true" type="byte_32_string"/>
+        </type-params-wrapper>
+        <type-params-wrapper typeName="addressParams">
+            <field fieldName="address" index="0" required="true" type="address"/>
+        </type-params-wrapper>
         <!-- return type specific to each method-->
     </param>
     <primitives>

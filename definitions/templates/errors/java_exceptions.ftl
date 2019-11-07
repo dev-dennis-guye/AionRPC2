@@ -20,8 +20,8 @@ public class RPCExceptions{
 
     public abstract static class RPCException extends RuntimeException{
 
-        private RPCError error;
-        protected RPCException(String message){
+        private final transient RPCError error;
+        RPCException(String message){
             super(message);
             this.error = RPCErrorConverter.decode(message);
         }

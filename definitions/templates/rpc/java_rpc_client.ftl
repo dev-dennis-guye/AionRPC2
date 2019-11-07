@@ -1,6 +1,7 @@
 <#import "../java_macros.ftl" as macros/>
 package org.aion.rpc.client;
 
+import java.math.BigInteger;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 import org.aion.rpc.types.RPCTypes.*;

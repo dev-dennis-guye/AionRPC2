@@ -15,5 +15,10 @@
         <method name="ops_getBlockDetails" param="blockSpecifier" returnType="blockDetails">
             <comment>Returns the details of the specified block.</comment>
         </method>
+        <method name="getblocktemplate" param="voidParams" returnType="blockTemplate"/>
+        <method name="submitblock" param="submitBlockParams" returnType="submissionResult"/>
+        <method name="validateaddress" param="addressParams" returnType="validateAddressResult"/>
+        <method name="getDifficulty" param="voidParams" returnType="big_int_hex_string"/>
+        <method name="getMinerStats" param="addressParams" returnType="minerStats"/>
     </methods>
 </rpc>

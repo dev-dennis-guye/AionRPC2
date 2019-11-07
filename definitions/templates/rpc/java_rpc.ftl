@@ -3,6 +3,7 @@ package org.aion.rpc.server;
 
 import static org.aion.rpc.errors.RPCExceptions.*;
 
+import java.math.BigInteger;
 import java.util.Set;
 import org.aion.rpc.types.RPCTypes.*;
 import org.aion.rpc.types.RPCTypesConverter.*;
@@ -24,7 +25,7 @@ public interface RPCServerMethods extends RPC{
             //check that the request can be fulfilled by this class
             <#list methods as method>
             if(request.method.equals("${method.name}")){
-                ${macros.toJavaType(method.param)} params=request.params.${macros.paramsExtractorFromName(method.param.name)};
+                ${macros.toJavaType(method.param)} params= ${macros.toJavaConverter(method.param)}.decode(request.params.encode());
                 if (params==null) throw ${macros.toJavaException("InvalidParams")}.INSTANCE;
                 ${macros.toJavaType(method.returnType)} result = this.${method.name}(<#list method.param.fields as parameter>params.${parameter.fieldName}<#if parameter_has_next>,</#if></#list>);
                 res = result == null ? null : new ResultUnion(result);
