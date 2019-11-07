@@ -354,12 +354,12 @@ public class RPCTypesConverter{
                 ${macros.toJavaType(paramType)} obj;
                 if(s.startsWith("[") && s.endsWith("]")){
                     JSONArray jsonArray = new JSONArray(s);
-                    if(jsonArray.length() != ${paramType.fields?size})  ${macros.toJavaException(decodeError.error_class)}.INSTANCE;
+                    if(jsonArray.length() > ${paramType.fields?size}) throw ${macros.toJavaException(decodeError.error_class)}.INSTANCE;
                     else obj = new ${macros.toJavaType(paramType)}(<#list paramType.fields as param> ${macros.toJavaConverter(param.type)}.decode(jsonArray.opt(${param.index}))<#if param_has_next>,</#if></#list>);
                 }
                 else if(s.startsWith("{") && s.endsWith("}")){
                     JSONObject jsonObject = new JSONObject(s);
-                    if(jsonObject.size() != ${paramType.fields?size})  ${macros.toJavaException(decodeError.error_class)}.INSTANCE;
+                    if(jsonObject.keySet().size() > ${paramType.fields?size}) throw ${macros.toJavaException(decodeError.error_class)}.INSTANCE;
                     else obj = new ${macros.toJavaType(paramType)}(<#list paramType.fields as param> ${macros.toJavaConverter(param.type)}.decode(jsonObject.opt("${param.fieldName}"))<#if param_has_next>,</#if></#list>);
                 }
                 else{
