@@ -1,5 +1,6 @@
 package org.aion.rpcgenerator.data;
 
+import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -86,6 +87,7 @@ public class TypeSchema implements Mappable {
     @Override
     public Map<String, Object> toMap() {
         return Map.ofEntries(
+            Map.entry("date", ZonedDateTime.now().toLocalDate()),
             Map.entry("compositeTypes",
                 compositeTypes.stream().map(Type::toMap).collect(Collectors.toUnmodifiableList())),
             Map.entry("constrainedTypes", constrainedTypes.stream().map(Type::toMap)

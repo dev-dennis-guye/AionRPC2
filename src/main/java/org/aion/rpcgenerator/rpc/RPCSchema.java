@@ -1,5 +1,6 @@
 package org.aion.rpcgenerator.rpc;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -59,6 +60,7 @@ public class RPCSchema implements Mappable {
 
     public Map<String, Object> toMap() {
         return Map.ofEntries(
+            Map.entry("date", ZonedDateTime.now().toLocalDate()),
             Map.entry("methods",
                 methods.stream().map(MethodSchema::toMap).collect(Collectors.toUnmodifiableList())),
             Map.entry("types",

@@ -9,6 +9,7 @@ import java.io.PrintWriter;
 import java.io.Writer;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -139,7 +140,9 @@ public class Cli implements Runnable {
                     p -> p.getName().endsWith("exceptions.ftl") || p.getName()
                         .endsWith("errors.ftl"))
                 .map(File::getPath).collect(Collectors.toUnmodifiableList());
-            Map<String, Object> errors = Map.ofEntries(Map.entry("errors",
+            Map<String, Object> errors = Map.ofEntries(
+                Map.entry("date", ZonedDateTime.now().toLocalDate()),
+                Map.entry("errors",
                 errorSchemas.stream().map(ErrorSchema::toMap)
                     .collect(Collectors.toUnmodifiableList())));
 
@@ -178,15 +181,23 @@ public class Cli implements Runnable {
             //noinspection ConstantConditions
             List<String> errorTemplates = Arrays
                 .stream(Paths.get(templatePath).toFile().listFiles()).filter(
-                    p -> p.getName().endsWith("rpc.ftl") || p.getName().endsWith("rpc_client.ftl"))
+                    p -> p.getName().endsWith("rpc.ftl") || p.getName().endsWith("rpc_client.ftl")
+                        || p.getName().endsWith("testUtils.ftl") || p.getName().endsWith("test.ftl"))
                 .map(File::getPath).collect(Collectors.toUnmodifiableList());
             for (String templateFile : errorTemplates) {
                 String outputFileName;
                 if (Utils.isJavaTemplate(templateFile)) {
                     if(templateFile.endsWith("rpc.ftl")) {
                         outputFileName ="RPCServerMethods.java";
-                    } else {
+                    } else if (templateFile.endsWith("rpc_client.ftl")){
                         outputFileName="RPCClientMethods.java";
+                    } else if(templateFile.endsWith("test.ftl")){
+                        outputFileName="RPCMethodsTest.java";
+                    } else if(templateFile.endsWith("testUtils.ftl")){
+                        outputFileName="RPCTestUtilsInterface.java";
+                    } else {
+                        logger.warn("Encountered an unexpected file: {}", templateFile);
+                        continue;
                     }
                 } else {
                     logger.warn("Encountered an unexpected file: {}", templateFile);

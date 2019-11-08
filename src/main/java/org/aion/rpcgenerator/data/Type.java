@@ -1,5 +1,6 @@
 package org.aion.rpcgenerator.data;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
