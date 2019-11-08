@@ -19,13 +19,25 @@ public class RPCExceptions{
             return ${macros.toJavaException("InternalError")}.INSTANCE;
     }
 
-    public abstract static class RPCException extends RuntimeException{
+    public static RPCException fromCodeAndMessage(int code, String message){
+        <#list errors as error><#if error.modifiable=="true"> if(code == ${error.code}){
+            return new ${macros.toJavaException(error.error_class)}(code, message);
+        }else</#if></#list>
+            return ${macros.toJavaException("InternalError")}.INSTANCE;
+    }
+
+    public static class RPCException extends RuntimeException{
 
         private final transient RPCError error;
         RPCException(String message){
             super(message);
             this.error = RPCErrorConverter.decode(message);
         }
+
+        RPCException(Integer code ,String message){
+            this("{\"code\":"+code+",\"message\":\""+message+"\"}");
+        }
+
         public RPCError getError(){
             return error;
         }
@@ -36,7 +48,13 @@ public class RPCExceptions{
         public static final ${macros.toJavaException(error.error_class)} INSTANCE = new ${macros.toJavaException(error.error_class)}();
         private ${macros.toJavaException(error.error_class)}(){
             super("{\"code\":${error.code},\"message\":\"${error.message}\"}");
+        }<#if error.modifiable=="true">
+        public ${macros.toJavaException(error.error_class)}(String appendedMessage){
+            super("{\"code\":${error.code},\"message\":\"${error.message}:"+appendedMessage+"\"}");
         }
+        ${macros.toJavaException(error.error_class)}(Integer code, String message){
+            super(code,message);
+        }</#if>
     }
 
     </#list>

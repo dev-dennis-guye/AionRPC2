@@ -18,7 +18,7 @@ import org.aion.util.types.ByteArrayWrapper;
 *****************************************************************************/
 public interface RPCServerMethods extends RPC{
 
-    default ResultUnion execute(Request request){
+    static ResultUnion execute(Request request, RPCServerMethods rpc){
         ResultUnion res;
     <#if errors?has_content>
         try{
@@ -28,7 +28,7 @@ public interface RPCServerMethods extends RPC{
             if(request.method.equals("${method.name}")){
                 ${macros.toJavaType(method.param)} params= ${macros.toJavaConverter(method.param)}.decode(request.params.encode());
                 if (params==null) throw ${macros.toJavaException("InvalidParams")}.INSTANCE;
-                ${macros.toJavaType(method.returnType)} result = this.${method.name}(<#list method.param.fields as parameter>params.${parameter.fieldName}<#if parameter_has_next>,</#if></#list>);
+                ${macros.toJavaType(method.returnType)} result = rpc.${method.name}(<#list method.param.fields as parameter>params.${parameter.fieldName}<#if parameter_has_next>,</#if></#list>);
                 res = result == null ? null : new ResultUnion(result);
             }else
             </#list>
@@ -45,7 +45,7 @@ public interface RPCServerMethods extends RPC{
         return res;
     }
 
-    default Set<String> listMethods(){
+    static Set<String> listMethods(){
         return Set.of(<#list methods as method> "${method.name}"<#if method_has_next>,</#if></#list>);
     }
 
