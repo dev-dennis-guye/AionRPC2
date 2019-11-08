@@ -25,6 +25,13 @@ public class SchemaUtils {
             .collect(Collectors.toUnmodifiableList());
     }
 
+    public static List<String> getErrors(NodeList nodeList){
+        return XMLUtils.elements(nodeList).stream()
+            .filter(element -> element.getNodeName().equals("error"))
+            .map(e-> e.getAttribute("value"))
+            .collect(Collectors.toUnmodifiableList());
+    }
+
     public static void initializeTypes(List<Type> types) {
         for (Type type : types) {
             if (type instanceof CompositeType) {

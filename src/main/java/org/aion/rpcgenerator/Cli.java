@@ -84,7 +84,7 @@ public class Cli implements Runnable {
                 typeSchema.setErrors(errorSchemas);
                 logger.debug("Reading rpc template files.");
                 //noinspection ConstantConditions
-                RPCSchema rpcSchema = new RPCSchema(XMLUtils.fromFile(Utils.appendToPath(spec, "rpc.xml")), typeSchema);
+                RPCSchema rpcSchema = new RPCSchema(XMLUtils.fromFile(Utils.appendToPath(spec, "rpc.xml")), typeSchema, errorSchemas);
 
 
                 File errorsOutputFile = new File(Utils.appendToPath(output, "errors"));

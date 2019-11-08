@@ -25,10 +25,12 @@ public class RPCSchema implements Mappable {
 
     /**
      * Parse the xml document and create the schema for an rpc
-     *  @param rpcSchema     the xml document
+     * @param rpcSchema     the xml document
      * @param types
+     * @param errorSchemas
      */
-    public RPCSchema(Document rpcSchema, TypeSchema types) {
+    public RPCSchema(Document rpcSchema, TypeSchema types,
+        List<ErrorSchema> errorSchemas) {
         Element root = rpcSchema.getDocumentElement();
         NodeList nodeList = root.getChildNodes();
         for (Element element: XMLUtils.elements(nodeList)) {
@@ -44,44 +46,7 @@ public class RPCSchema implements Mappable {
         for (MethodSchema methodSchema : methods) {
             methodSchema.setParamType(types.toList());
             methodSchema.setReturnType(types.toList());
-        }
-    }
-
-    private static List<ErrorSchema> getErrors(NodeList nodeList, List<ErrorSchema> errorSchemas) {
-        List<String> errorNames = XMLUtils.elements(nodeList).stream()
-            .map(element -> XMLUtils.valueFromAttribute(element, "error_class"))
-            .collect(Collectors.toList());
-
-        List<ErrorSchema> result = errorSchemas.stream()
-            .filter(e -> errorNames.contains(e.getErrorClass()))
-            .collect(Collectors.toUnmodifiableList());
-        if (result.size() == errorNames.size()) {
-            return result;
-        } else {
-            throw new IllegalStateException(
-                "Failed to find the following error definitions " + errorSchemas.stream()
-                    .filter(e -> !errorNames.contains(e.getErrorClass()))
-                    .map(ErrorSchema::getErrorClass)
-                    .collect(Collectors.joining(",")));
-        }
-    }
-
-    private static List<Type> getTypes(NodeList nodeList, TypeSchema typeSchema) {
-        List<String> typeNames = XMLUtils.elements(nodeList).stream()
-            .map(element -> XMLUtils.valueFromAttribute(element, "typeName"))
-            .collect(Collectors.toUnmodifiableList());
-
-        List<Type> result = typeSchema.toList().stream()
-            .filter(t-> typeNames.contains(t.name))
-            .collect(Collectors.toUnmodifiableList());
-        if (result.size() == typeNames.size()) {
-            return result;
-        } else {
-            throw new IllegalStateException(
-                "Failed to find the following error definitions " + typeSchema.toList().stream()
-                    .filter(e -> !result.contains(e))
-                    .map(e->e.name)
-                    .collect(Collectors.joining(",")));
+            methodSchema.setErrorsSchemas(errorSchemas);
         }
     }
 

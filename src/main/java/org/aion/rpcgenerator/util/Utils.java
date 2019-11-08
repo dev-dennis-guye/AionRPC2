@@ -2,7 +2,11 @@ package org.aion.rpcgenerator.util;
 
 import ch.qos.logback.classic.Level;
 import java.io.File;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import org.aion.rpcgenerator.Mappable;
 import org.slf4j.Logger;
 
 public class Utils {
@@ -28,5 +32,9 @@ public class Utils {
 
     public static boolean isRustTemplate(String path){
         return RUST_TEMPLATE_FILE_PATTERN.matcher(path).find();
+    }
+
+    public static List<Map<String, Object>> toListOfMaps(List<? extends Mappable> mappables){
+        return mappables.stream().map(Mappable::toMap).collect(Collectors.toUnmodifiableList());
     }
 }

@@ -17,20 +17,23 @@ public class ErrorSchema implements Mappable {
     private final int code;
     private final String message;
     private final List<String> comments;
+    private final String modifiable;
 
     public ErrorSchema(Element node) {
         errorClass = node.getAttributes().getNamedItem("error_class").getNodeValue();
         code = Integer.parseInt(node.getAttributes().getNamedItem("code").getNodeValue());
         message = node.getAttributes().getNamedItem("message").getNodeValue();
         comments= SchemaUtils.getComments(node.getChildNodes());
+        modifiable = XMLUtils.valueFromAttribute(node, "modifiable");
     }
 
     public ErrorSchema(String errorClass, int code, String message,
-        List<String> comments) {
+        List<String> comments, String modifiable) {
         this.errorClass = errorClass;
         this.code = code;
         this.message = message;
         this.comments = comments;
+        this.modifiable = modifiable;
     }
 
     public static List<ErrorSchema> fromDocument(Document document) {
@@ -49,7 +52,8 @@ public class ErrorSchema implements Mappable {
             Map.entry("error_class", errorClass),
             Map.entry("code", Integer.toString(code)),
             Map.entry("message", message),
-            Map.entry("comments", comments)
+            Map.entry("comments", comments),
+            Map.entry("modifiable", modifiable)
         );
     }
 

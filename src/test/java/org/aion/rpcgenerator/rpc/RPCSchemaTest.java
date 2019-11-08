@@ -57,15 +57,15 @@ public class RPCSchemaTest {
             + "</rpc>";
         String xmlError = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n"
             + "<errors>\n"
-            + "    <error error_class=\"InvalidRequest\" code=\"-32600\" message=\"Invalid Request\"/>\n"
-            + "    <error error_class=\"ParseError\" code=\"-32700\" message=\"Parse error\">\n"
+            + "    <error error_class=\"InvalidRequest\" code=\"-32600\" message=\"Invalid Request\" modifiable=\"false\"/>\n"
+            + "    <error error_class=\"ParseError\" code=\"-32700\" message=\"Parse error\" modifiable=\"false\">\n"
             + "        <comment>Occurs if a user submits a malformed json payload</comment>\n"
             + "    </error>\n"
-            + "    <error error_class=\"MethodNotFound\" code=\"-32601\" message=\"Method not found\"/>\n"
-            + "    <error error_class=\"InvalidParams\" code=\"-32602\" message=\"Invalid params\">\n"
+            + "    <error error_class=\"MethodNotFound\" code=\"-32601\" message=\"Method not found\" modifiable=\"true\"/>\n"
+            + "    <error error_class=\"InvalidParams\" code=\"-32602\" message=\"Invalid params\"  modifiable=\"false\">\n"
             + "        <comment>Occurs if a user fails to supply the correct parameters for a method</comment>\n"
             + "    </error>\n"
-            + "    <error error_class=\"InternalError\" code=\"-32603\" message=\"Internal error\">\n"
+            + "    <error error_class=\"InternalError\" code=\"-32603\" message=\"Internal error\"  modifiable=\"true\">\n"
             + "        <comment>Occurs if the server failed to complete the request</comment>\n"
             + "    </error>\n"
             + "</errors>";
@@ -264,7 +264,7 @@ public class RPCSchemaTest {
         List<ErrorSchema> errors = assertDoesNotThrow(() -> ErrorSchema.fromDocument(doc));
         TypeSchema typeSchema = new TypeSchema(XMLUtils.fromString(typeXml));
         typeSchema.setErrors(errors);
-        RPCSchema schema = new RPCSchema(XMLUtils.fromString(xml), typeSchema);
+        RPCSchema schema = new RPCSchema(XMLUtils.fromString(xml), typeSchema, errors);
 
         PrimitiveType intType = new PrimitiveType("int", Collections.emptyList());
         PrimitiveType stringType = new PrimitiveType("string", Collections.emptyList());
@@ -290,11 +290,12 @@ public class RPCSchemaTest {
 
         MethodSchema methodSchema = new MethodSchema("personal_ecRecover", "ecRecoverParams",
             "data_hex_string", List.of(
-            "Allows you to interact with accounts on the aion network and provides a handful of crypto utilities"));
+            "Allows you to interact with accounts on the aion network and provides a handful of crypto utilities"),
+            Collections.emptyList());
         methodSchema.setReturnType(List.of(hexType));
         methodSchema.setParamType(List.of(paramTypeEcRecover));
         ErrorSchema errorSchema = new ErrorSchema("InvalidRequest", -32600, "Invalid Request",
-            Collections.emptyList());
+            Collections.emptyList(), "false");
         assertEquals("personal", schema.toMap().get("rpc"));
 
         assertTrue(walkMapGraph(schema.toMap(), methodSchema.toMap()));

@@ -9,16 +9,38 @@
         <method name="personal_ecRecover" param="ecRecoverParams" returnType="address">
             <comment>Returns the key used to sign an input string.</comment>
         </method>
-        <method name="getseed" param="voidParams" returnType="data_hex_string"/>
-        <method name="submitseed" param="submitSeedParams" returnType="data_hex_string"/>
-        <method name="submitsignature" param="submitSignatureParams" returnType="bool"/>
+        <method name="getseed" param="voidParams" returnType="data_hex_string">
+            <errors>
+                <error value="UnsupportedUnityFeature"/>
+            </errors>
+        </method>
+        <method name="submitseed" param="submitSeedParams" returnType="data_hex_string">
+            <errors>
+                <error value="UnsupportedUnityFeature"/>
+            </errors>
+        </method>
+        <method name="submitsignature" param="submitSignatureParams" returnType="bool">
+            <errors>
+                <error value="UnsupportedUnityFeature"/>
+                <error value="BlockTemplateNotFound"/>
+            </errors>
+        </method>
         <method name="ops_getBlockDetails" param="blockSpecifier" returnType="blockDetails">
             <comment>Returns the details of the specified block.</comment>
         </method>
         <method name="getblocktemplate" param="voidParams" returnType="blockTemplate"/>
-        <method name="submitblock" param="submitBlockParams" returnType="submissionResult"/>
+        <method name="submitblock" param="submitBlockParams" returnType="submissionResult">
+            <errors>
+                <error value="BlockTemplateNotFound"/>
+                <error value="FailedToSealBlock"/>
+            </errors>
+        </method>
         <method name="validateaddress" param="addressParams" returnType="validateAddressResult"/>
         <method name="getDifficulty" param="voidParams" returnType="big_int_hex_string"/>
-        <method name="getMinerStats" param="addressParams" returnType="minerStats"/>
+        <method name="getMinerStats" param="addressParams" returnType="minerStats">
+            <errors>
+                <error value="FailedToComputeMetrics"/>
+            </errors>
+        </method>
     </methods>
 </rpc>

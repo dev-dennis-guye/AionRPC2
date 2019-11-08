@@ -64,9 +64,9 @@ public class XMLUtils {
     }
 
     public static Optional<Element> elementFromTag(Element parent, String tag){
-        NodeList nodeList = parent.getElementsByTagName(tag);
-        if (nodeList.getLength()>0){
-            return Optional.of((Element) nodeList.item(0));
+        List<Element> nodeList = XMLUtils.elements(parent.getElementsByTagName(tag));
+        if (!nodeList.isEmpty()){
+            return Optional.of((Element) nodeList.get(0));
         }else {
             return Optional.empty();
         }
