@@ -1,0 +1,122 @@
+# Aion RPC Generator
+The aion RPC generator allows autogeneration of the interface, errors, and data types associated with the Aion JSON-RPC implementation.
+The RPC generator depends to on two resources: an xml specification file and associated template files. 
+
+##The RPC Specification
+The rpc specification is made up of three files: 
+1. errors.xml - contains the error definitions, codes, and messages
+2. rpc.xml - contains the signature of rpc methods and any associated errors 
+3. types.xml - contains the definition of regex for each primitive data type and type definitions.
+
+###Typing
+There are 7 data types that can be defined: 
+####Primitive data types
+These data types are the basic data types used by the rpc and the blockchain. As such, these will need to be manually defined in any implementation of the spec. 
+```xml
+<type-primitive typeName="address"/> <!--All types have an associated name-->
+```
+####Constrained data types 
+These data types are primitives that have been constrained by a min and max size and a regex. Eg. an int_hex_string is defined by the regex `^0x[a-fA-F0-9]+$`. Its size is limited to 4 bytes and since a hex string encodes one byte in two characters an int hex string will have a max length of 8 characters. All hex strings encoded must start with 0x so this gives a maximum length of 10. 
+```xml
+<type-constrained baseType="int" min="3" max="10" regex="^0x[0-9a-fA-F]+$" typeName="int_hex_string"/>
+```
+####Enum data types
+These are constant values used by the RPC. Eg. The json rpc version can only be "2.0".
+```xml
+<type-enum typeName="version_string" internalType = "string"><!--internalType specifies the data type of each enum value-->
+    <value name="Version2" var="2.0"/><!--Each value specifies the name of the constant and its value(var)-->
+</type-enum>
+```
+####Array data types
+These are arrays which contained a nested value. 
+```xml
+<type-list typeName="request_array" nestedType="request"/> <!--The nested Type is the type which this array can contain-->
+```
+####Composite data types
+These are data structures group related data together. Each field is associated with a name, type, and a required attribute.
+```xml
+<type-composite typeName="response">
+    <comment>This is the standard response body for a JSON RPC Request</comment>
+    <field fieldName="id" required="false" type="int"/> <!--Each field must define a name, type and whether any representation in the RPC requires the field is populated-->
+    <field fieldName="result" required="false" type="resultUnion"/>
+    <field fieldName="error" required="false" type="error"/>
+    <field fieldName="jsonrpc" required="true" type="version_string"/>
+</type-composite>
+```
+####Param data types
+These are similar to composite data types but they are used to package the parameters of a method. Each field is similar to those in a composite data type but with an additional index field because params can be encoded as either an array or a struct. 
+```xml
+<!--The index attributes specifies the order of the parameters.
+A defaultValue attribute can optionally be added if a field is not required-->        
+<type-params-wrapper typeName="submitSignatureParams">
+    <field fieldName="signature" index="0" required="true" type="byte_64_string"/>
+    <field fieldName="sealHash" index="1" required="true" type="byte_32_string"/>
+</type-params-wrapper>
+```
+####Union data types
+These are used to define any value that could be defined using different types.
+```xml
+<type-union typeName="blockSpecifierUnion" nullable="true"><!--Nullable indicates that this union can equal null-->
+    <comment>Specifies a block</comment>
+    <union-element type="byte-array" name="hash"/><!--each union element has a type and an associated name-->
+    <union-element type="long" name="blockNumber"/>
+    <union-element type="blockEnum" name="blockEnum"/>
+</type-union>
+```
+
+###Methods
+Method declarations are used to generate the interfaces which need to be implemented. They contain three required components and two optional.
+```xml
+<method name="submitsignature" param="submitSignatureParams" returnType="bool"><!--The param and returnTypes must be defined within the types.xml file and the name must be unique to this method.-->
+    <errors> <!--Optional These are the errors that can be thrown by this method. This contextual information can be used to generate test cases-->
+        <error value="UnsupportedUnityFeature"/>
+        <error value="BlockTemplateNotFound"/>
+    </errors>
+    <comment>Allows a POS validator to submit their signature to seal a block.</comment><!--Optional-->
+</method>
+```
+This declaration will give us a method signature `bool submitsignature(submitSignatureParams) throws UnsupportedUnityFeature, BlockTemplateNotFound` which can then be interpreted by the template files.
+
+###Errors
+The JSON-RPC implementation is able to return errors if the call fails.
+```xml
+<!--Error class is type of error that will be generated by this definition-->
+<!--Code is required by the JSON-RPC spec.-->
+<!--Message is contextual based on this error-->
+<!--Modifiable indicates whether information can be appended to error message or whether the error must be treated as a constant.--> 
+<error error_class="UnsupportedUnityFeature" code="-32001" message="Unity fork is not enabled" modifiable="false">
+    <comment>Occurs if a unity specific service is requested</comment>
+</error>
+```
+###Templates
+The templates are written in freemarker. Every freemarker template receives the current date along with the following which is unique to each template.
+
+####Errors  
+Error templates are supplied with a list of error templates. Each error within the list contains: error_class, code, message, comments, and modifiable. 
+
+####Types
+Type templates are supplied with lists of: 
+* primitiveTypes - is a list of maps which contains a name and comment. These elements are found in all other type maps.
+* compositeTypes - is a list of maps which contains a list of fields. Each field map contains a fieldName, type, and required.
+* constrainedTypes - is a list of maps which contains a regex, min, max, and baseType.
+* enumTypes - is a list of maps which contains an internalType, and list of values. Each field is a value which contains a name and value.
+* paramTypes - is a list of maps which contains a list of fields. Each field map contains a fieldName, type, index, and required. A field may also contain a defaultValue. But each template needs to ensure that this value is defined before accessing.
+* arrayTypes - is a list of maps which contains a nestedType.
+* unionTypes - is a list of maps which contains a list of unionElements and nullable. Each unionElment contains a name, type and comment.
+* patterns - is a regex.
+* decodeError
+* encodeError  
+
+####RPC
+RPC templates are supplied with methods, types and comments. The comments object is a list of strings. Methods contain a name, param(type), returnType, comments and errors.
+
+##Limitations
+Currently this tooling only supports java. Additionally, the request and result unions in the specification need to be manually edited anc cannot be auto generated. This will need to be changed as this tool moves into production. 
+
+##Future Plans
+
+1. Generate a rust implementaion of the RPC 
+2. Generate test code
+3. Move the name of the auto generated files into an external configuration
+4. Print a spec template using the cli
+5. Add an xml schema definition
