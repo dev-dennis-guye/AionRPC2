@@ -1,4 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE errors [
+    <!ELEMENT errors (error)*>
+    <!ELEMENT error (comment)*>
+    <!ATTLIST error
+        code CDATA #REQUIRED
+        error_class CDATA #REQUIRED
+        message CDATA #REQUIRED
+        modifiable CDATA #REQUIRED>
+    <!ELEMENT comment (#PCDATA)>
+    ]>
 <errors>
     <error error_class="InvalidRequest" code="-32600" message="Invalid Request" modifiable="false"/>
     <error error_class="ParseError" code="-32700" message="Parse error" modifiable="false">

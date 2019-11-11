@@ -1,4 +1,68 @@
 <?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE types [
+    <!ELEMENT types (encode-error|decode-error|regexes|union|composite|array|constrained|enum|param|primitives)*>
+    <!ELEMENT encode-error (#PCDATA)>
+    <!ATTLIST encode-error
+        error_class CDATA #REQUIRED>
+    <!ELEMENT decode-error (#PCDATA)>
+    <!ATTLIST decode-error
+        error_class CDATA #REQUIRED>
+    <!ELEMENT regexes (regex)*>
+    <!ELEMENT regex (#PCDATA)>
+    <!ATTLIST regex
+        name CDATA #REQUIRED
+        value CDATA #REQUIRED>
+    <!ELEMENT union (type-union)*>
+    <!ELEMENT type-union (comment|union-element)*>
+    <!ATTLIST type-union
+        nullable CDATA #REQUIRED
+        typeName CDATA #REQUIRED>
+    <!ELEMENT comment (#PCDATA)>
+    <!ELEMENT union-element (#PCDATA)>
+    <!ATTLIST union-element
+        name CDATA #REQUIRED
+        type CDATA #REQUIRED>
+    <!ELEMENT composite (type-composite)*>
+    <!ELEMENT type-composite (comment|field)*>
+    <!ATTLIST type-composite
+        typeName CDATA #REQUIRED>
+    <!ELEMENT field (#PCDATA)>
+    <!ATTLIST field
+        fieldName CDATA #REQUIRED
+        index CDATA #IMPLIED
+        required CDATA #REQUIRED
+        type CDATA #REQUIRED>
+    <!ELEMENT array (type-list)*>
+    <!ELEMENT type-list (#PCDATA)>
+    <!ATTLIST type-list
+        nestedType CDATA #REQUIRED
+        typeName CDATA #REQUIRED>
+    <!ELEMENT constrained (type-constrained)*>
+    <!ELEMENT type-constrained (#PCDATA)>
+    <!ATTLIST type-constrained
+        baseType CDATA #REQUIRED
+        max CDATA #REQUIRED
+        min CDATA #REQUIRED
+        regex CDATA #REQUIRED
+        typeName CDATA #REQUIRED>
+    <!ELEMENT enum (type-enum)*>
+    <!ELEMENT type-enum (value)*>
+    <!ATTLIST type-enum
+        internalType CDATA #REQUIRED
+        typeName CDATA #REQUIRED>
+    <!ELEMENT value (#PCDATA)>
+    <!ATTLIST value
+        name CDATA #REQUIRED
+        var CDATA #REQUIRED>
+    <!ELEMENT param (type-params-wrapper)*>
+    <!ELEMENT type-params-wrapper (field)*>
+    <!ATTLIST type-params-wrapper
+        typeName CDATA #REQUIRED>
+    <!ELEMENT primitives (type-primitive)*>
+    <!ELEMENT type-primitive (#PCDATA)>
+    <!ATTLIST type-primitive
+        typeName CDATA #REQUIRED>
+    ]>
 <types>
     <encode-error error_class="ParseError"/>
     <decode-error error_class="ParseError"/>

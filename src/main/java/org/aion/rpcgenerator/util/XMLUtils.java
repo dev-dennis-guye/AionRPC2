@@ -14,11 +14,15 @@ import javax.swing.text.html.Option;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 public class XMLUtils {
 
@@ -40,8 +44,33 @@ public class XMLUtils {
 
     public static Document fromString(String string)
         throws IOException, SAXException, ParserConfigurationException {
-        DocumentBuilder builder = DocumentBuilderFactory.newDefaultInstance().newDocumentBuilder();
+        DocumentBuilder builder = documentBuilder();
         return builder.parse(new ByteArrayInputStream(string.getBytes(StandardCharsets.UTF_8)));
+    }
+
+    private static DocumentBuilder documentBuilder() throws ParserConfigurationException {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newDefaultInstance();
+        factory.setValidating(true);
+        final DocumentBuilder builder = factory.newDocumentBuilder();
+        builder.setErrorHandler(new ErrorHandler() {//set validation
+            private final Logger logger = LoggerFactory.getLogger(this.getClass());
+            @Override
+            public void warning(SAXParseException exception) throws SAXException {
+                throw exception;
+            }
+
+            @Override
+            public void error(SAXParseException exception) throws SAXException {
+                throw exception;
+            }
+
+            @Override
+            public void fatalError(SAXParseException exception) throws SAXException {
+                logger.warn("", exception);
+                throw exception;
+            }
+        });
+        return builder;
     }
 
     public static Document fromFile(String file)

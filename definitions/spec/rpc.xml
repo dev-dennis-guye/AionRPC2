@@ -1,4 +1,19 @@
 <?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE rpc [
+    <!ELEMENT rpc (comments|methods)*>
+    <!ELEMENT comments (comment)*>
+    <!ELEMENT comment (#PCDATA)>
+    <!ELEMENT methods (method)*>
+    <!ELEMENT method (comment|errors)*>
+    <!ATTLIST method
+        name CDATA #REQUIRED
+        param CDATA #REQUIRED
+        returnType CDATA #REQUIRED>
+    <!ELEMENT errors (error)*>
+    <!ELEMENT error (#PCDATA)>
+    <!ATTLIST error
+        value CDATA #REQUIRED>
+    ]>
 <rpc>
     <comments>
         <comment>Allows you to interact with accounts on the aion network and provides a handful of
