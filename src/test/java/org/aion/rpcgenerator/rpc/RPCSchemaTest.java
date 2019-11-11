@@ -278,8 +278,8 @@ public class RPCSchemaTest {
 
         ParamType paramTypeEcRecover = new ParamType("ecRecoverParams", Collections.emptyList(),
             List.of(
-                new ParamType.Field(0, "dataThatWasSigned", "string", "true"),
-                new ParamType.Field(1, "signature", "data_hex_string", "true")
+                new ParamType.Field(0, "dataThatWasSigned", "string", "true", ""),
+                new ParamType.Field(1, "signature", "data_hex_string", "true", "")
             ));
         paramTypeEcRecover.setFieldTypeDef(List.of(hexType, stringType));
 

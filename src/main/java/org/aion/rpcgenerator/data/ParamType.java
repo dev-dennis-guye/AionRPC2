@@ -24,8 +24,8 @@ public class ParamType extends Type {
                     Integer.parseInt(XMLUtils.valueFromAttribute(fieldNode, "index")),
                     XMLUtils.valueFromAttribute(fieldNode, "fieldName"),
                     XMLUtils.valueFromAttribute(fieldNode, "type"),
-                    XMLUtils.valueFromAttribute(fieldNode, "required")
-                ));
+                    XMLUtils.valueFromAttribute(fieldNode, "required"),
+                    XMLUtils.optionalValueFromAttribute(fieldNode, "defaultValue").orElse("")));
             }
         }
     }
@@ -56,26 +56,42 @@ public class ParamType extends Type {
 
     public static class Field implements Mappable {
 
-        private Integer index;
-        private String fieldName;
-        private String typeName;
-        private String required;
+        private final Integer index;
+        private final String fieldName;
+        private final String typeName;
+        private final String required;
         private Type type;
+        private final String defaultValue;
 
-        public Field(Integer index, String fieldName, String typeName, String required) {
-            this.index = index;
-            this.fieldName = fieldName;
-            this.typeName = typeName;
-            this.required = required;
+        public Field(Integer index, String fieldName, String typeName, String required,
+            String defaultValue) {
+            if (required.equalsIgnoreCase("true") && !defaultValue.isEmpty())
+                throw new IllegalStateException("Cannot give a default value to a required field");
+            else {
+                this.index = index;
+                this.fieldName = fieldName;
+                this.typeName = typeName;
+                this.required = required;
+                this.defaultValue = defaultValue;
+            }
         }
 
         public Map<String, Object> toMap() {
-            return Map.ofEntries(
-                Map.entry("fieldName", fieldName),
-                Map.entry("type", type.toMap()),
-                Map.entry("required", required),
-                Map.entry("index", index.toString())
-            );
+            if (defaultValue.isEmpty()) {
+                return Map.ofEntries(
+                    Map.entry("fieldName", fieldName),
+                    Map.entry("type", type.toMap()),
+                    Map.entry("required", required),
+                    Map.entry("index", index.toString()));
+            } else {
+                return Map.ofEntries(
+                    Map.entry("fieldName", fieldName),
+                    Map.entry("type", type.toMap()),
+                    Map.entry("required", required),
+                    Map.entry("index", index.toString()),
+                    Map.entry("defaultValue", defaultValue)
+                );
+            }
         }
 
         boolean setTypeDef(List<Type> types) {

@@ -167,13 +167,14 @@ public class RPCTypes{
     public static final class ${macros.toJavaType(paramType)} {
     <#list paramType.fields as field>
         public final ${macros.toJavaType(field.type)} ${field.fieldName};
+        <#if field.defaultValue?has_content>private final ${macros.toJavaType(field.type)} ${field.fieldName}DefaultValue=${macros.toJavaConverter(field.type)}.decode("${field.defaulValue}");</#if>
     </#list>
 
         public ${macros.toJavaType(paramType)}(<#list paramType.fields as field>${macros.toJavaType(field.type)} ${field.fieldName} <#if field_has_next>,</#if></#list>){
     <#list paramType.fields as field><#if field.required=="true" >
             if(${field.fieldName}==null) throw ${macros.toJavaException("ParseError")}.INSTANCE;
     </#if>
-            this.${field.fieldName}=${field.fieldName};
+            this.${field.fieldName}=<#if field.defaultValue?has_content> ${field.fieldName}==null? ${field.fieldName}DefaultValue:</#if> ${field.fieldName};
     </#list>
         }
     }

@@ -30,6 +30,10 @@ public class XMLUtils {
         return node.getAttributes().getNamedItem(attributeName).getNodeValue();
     }
 
+    public static Optional<String> optionalValueFromAttribute(Node node, String attributeName){
+        return hasAttribute(node, attributeName)? Optional.of(valueFromAttribute(node, attributeName)) : Optional.empty();
+    }
+
     public static boolean hasAttribute(Node node, String attributeName) {
         return node.getAttributes().getNamedItem(attributeName) != null;
     }
