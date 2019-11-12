@@ -146,9 +146,7 @@ public class Cli implements Runnable {
             // templates which match the expected names
             Map<String, Object> errors = Map.ofEntries(// create the error map
                 Map.entry("date", ZonedDateTime.now().toLocalDate()),
-                Map.entry("errors",
-                errorSchemas.stream().map(ErrorSchema::toMap)
-                    .collect(Collectors.toUnmodifiableList())));
+                Map.entry("errors", Utils.toListOfMaps(errorSchemas)));
 
             for (String templateFile : errorTemplates) {
                 String outputFileName;

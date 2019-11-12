@@ -12,6 +12,7 @@ import org.aion.rpcgenerator.data.Type;
 import org.aion.rpcgenerator.data.TypeSchema;
 import org.aion.rpcgenerator.error.ErrorSchema;
 import org.aion.rpcgenerator.util.SchemaUtils;
+import org.aion.rpcgenerator.util.Utils;
 import org.aion.rpcgenerator.util.XMLUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -23,7 +24,6 @@ import org.w3c.dom.NodeList;
  */
 public class RPCSchema implements Mappable {
 
-    private List<Type> types = new ArrayList<>();
     private List<MethodSchema> methods = new ArrayList<>();
     private List<String> comments = new ArrayList<>();
 
@@ -64,10 +64,7 @@ public class RPCSchema implements Mappable {
     public Map<String, Object> toMap() {
         return Map.ofEntries(
             Map.entry("date", ZonedDateTime.now().toLocalDate()),
-            Map.entry("methods",
-                methods.stream().map(MethodSchema::toMap).collect(Collectors.toUnmodifiableList())),
-            Map.entry("types",
-                types.stream().map(Type::toMap).collect(Collectors.toUnmodifiableList())),
+            Map.entry("methods", Utils.toListOfMaps(methods)),
             Map.entry("comments", comments)
         );
     }

@@ -89,23 +89,16 @@ public class TypeSchema implements Mappable {
     public Map<String, Object> toMap() {
         return Map.ofEntries(
             Map.entry("date", ZonedDateTime.now().toLocalDate()),
-            Map.entry("compositeTypes",
-                compositeTypes.stream().map(Type::toMap).collect(Collectors.toUnmodifiableList())),
-            Map.entry("constrainedTypes", constrainedTypes.stream().map(Type::toMap)
-                .collect(Collectors.toUnmodifiableList())),
-            Map.entry("enumTypes",
-                enumTypes.stream().map(Type::toMap).collect(Collectors.toUnmodifiableList())),
-            Map.entry("paramTypes",
-                paramTypes.stream().map(Type::toMap).collect(Collectors.toUnmodifiableList())),
-            Map.entry("primitivesTypes",
-                primitiveTypes.stream().map(Type::toMap).collect(Collectors.toUnmodifiableList())),
-            Map.entry("arrayTypes",
-                arrayType.stream().map(Type::toMap).collect(Collectors.toUnmodifiableList())),
-            Map.entry("unionTypes",
-                unionType.stream().map(Type::toMap).collect(Collectors.toUnmodifiableList())),
+            Map.entry("compositeTypes", Utils.toListOfMaps(compositeTypes)),
+            Map.entry("constrainedTypes", Utils.toListOfMaps(constrainedTypes)),
+            Map.entry("enumTypes", Utils.toListOfMaps(enumTypes)),
+            Map.entry("paramTypes", Utils.toListOfMaps(paramTypes)),
+            Map.entry("primitivesTypes", Utils.toListOfMaps(primitiveTypes)),
+            Map.entry("arrayTypes", Utils.toListOfMaps(arrayType)),
+            Map.entry("unionTypes", Utils.toListOfMaps(unionType)),
             Map.entry("encodeError", encodeError.toMap()),
             Map.entry("decodeError", decodeError.toMap()),
-            Map.entry("patterns", patterns.stream().map(Mappable::toMap).collect(Collectors.toUnmodifiableList()))
+            Map.entry("patterns", Utils.toListOfMaps(patterns))
         );
     }
 
