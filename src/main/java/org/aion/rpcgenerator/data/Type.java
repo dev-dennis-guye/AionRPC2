@@ -86,6 +86,7 @@ public abstract class Type implements Mappable {
      * @return
      */
     protected Map<String, Object> toMutableMap() {
+        // all implementations of this interface have these attributes
         Map<String, Object> map = new HashMap<>();
         map.put("name", name);
         map.put("comments", comments);

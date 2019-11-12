@@ -107,7 +107,7 @@ public class CliTest {
 
     @Test
     void testProcessAllRPC() throws IOException, TemplateException {
-        cli.processAllTemplates(rpcOutputFile, rpcSchema, "definitions/templates/rpc", configuration);
+        cli.processAllRPCTemplates(rpcOutputFile, rpcSchema, "definitions/templates/rpc", configuration);
         assertTrue(rpcOutputFile.exists());
         assertNotNull(rpcOutputFile.listFiles());
         //noinspection ConstantConditions

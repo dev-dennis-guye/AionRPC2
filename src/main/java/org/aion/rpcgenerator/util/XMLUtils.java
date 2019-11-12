@@ -31,23 +31,42 @@ public class XMLUtils {
     }
 
     public static String valueFromAttribute(Node node, String attributeName) {
+        //throws if attribute does not contain the value
         return node.getAttributes().getNamedItem(attributeName).getNodeValue();
     }
 
+    /**
+     * Checks that attribute exists and returns a value if it does.
+     * @param node the node
+     * @param attributeName the name of the attribute
+     * @return the value if it exists
+     */
     public static Optional<String> optionalValueFromAttribute(Node node, String attributeName){
         return hasAttribute(node, attributeName)? Optional.of(valueFromAttribute(node, attributeName)) : Optional.empty();
     }
 
+    /**
+     * Checks that the attribute exists
+     * @param node
+     * @param attributeName
+     * @return
+     */
     public static boolean hasAttribute(Node node, String attributeName) {
         return node.getAttributes().getNamedItem(attributeName) != null;
     }
 
+    //Reads the xml document from a string
     public static Document fromString(String string)
         throws IOException, SAXException, ParserConfigurationException {
         DocumentBuilder builder = documentBuilder();
         return builder.parse(new ByteArrayInputStream(string.getBytes(StandardCharsets.UTF_8)));
     }
 
+    /**
+     * Creates the document builder
+     * @return
+     * @throws ParserConfigurationException
+     */
     private static DocumentBuilder documentBuilder() throws ParserConfigurationException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newDefaultInstance();
         factory.setValidating(true);
@@ -73,18 +92,25 @@ public class XMLUtils {
         return builder;
     }
 
+    //reads an xml document given a file name
     public static Document fromFile(String file)
         throws IOException, SAXException, ParserConfigurationException {
         List<String> document = Files.readAllLines(Paths.get(file));
         return fromString(String.join("", document));
     }
 
+    //reads an xml document given a file
     public static Document fromFile(File file)
         throws ParserConfigurationException, IOException, SAXException {
         DocumentBuilder builder = DocumentBuilderFactory.newDefaultInstance().newDocumentBuilder();
         return builder.parse(file);
     }
 
+    /**
+     * Filters out the elements from a node list
+     * @param nodeList the childNodes
+     * @return a list of elements
+     */
     public static List<Element> elements(NodeList nodeList) {
         List<Element> elements = new ArrayList<>();
 
@@ -96,6 +122,12 @@ public class XMLUtils {
         return Collections.unmodifiableList(elements);
     }
 
+    /**
+     * Gets an element from the given tag name
+     * @param parent
+     * @param tag
+     * @return
+     */
     public static Optional<Element> elementFromTag(Element parent, String tag){
         List<Element> nodeList = XMLUtils.elements(parent.getElementsByTagName(tag));
         if (!nodeList.isEmpty()){

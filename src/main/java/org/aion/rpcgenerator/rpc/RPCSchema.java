@@ -18,6 +18,9 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+/**
+ * This class encapsulates the details of the rpc.xml class
+ */
 public class RPCSchema implements Mappable {
 
     private List<Type> types = new ArrayList<>();
@@ -44,7 +47,7 @@ public class RPCSchema implements Mappable {
                     comments= SchemaUtils.getComments(element.getChildNodes());
             }
         }
-        for (MethodSchema methodSchema : methods) {
+        for (MethodSchema methodSchema : methods) {// We need to initialize all the methods with their errors and types
             methodSchema.setParamType(types.toList());
             methodSchema.setReturnType(types.toList());
             methodSchema.setErrorsSchemas(errorSchemas);
@@ -70,6 +73,7 @@ public class RPCSchema implements Mappable {
     }
 
     enum SchemaDef {
+        //returns the node
         METHOD("methods"), COMMENTS("comments");
         private static List<SchemaDef> values = Arrays.asList(values());
         private final String xmlNodeName;

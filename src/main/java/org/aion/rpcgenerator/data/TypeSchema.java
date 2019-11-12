@@ -9,6 +9,7 @@ import java.util.stream.Stream;
 import org.aion.rpcgenerator.Mappable;
 import org.aion.rpcgenerator.error.ErrorSchema;
 import org.aion.rpcgenerator.util.SchemaUtils;
+import org.aion.rpcgenerator.util.Utils;
 import org.aion.rpcgenerator.util.XMLUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
